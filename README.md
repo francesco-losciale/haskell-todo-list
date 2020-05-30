@@ -1,6 +1,11 @@
 # haskell-todo-list
 
-1. starting from todomvc, list requirements and ACs of the program, define API (http://todomvc.com/)
+1. starting from todomvc, define API and implement service (use http://todomvc.com/examples/vanilla-es6/)
+    - three views : Active, Completed, All (=Active+Completed)
+    - action add an element (default status Active)
+    - action flag element as Completed
+    - action clear completed
+    
 2. do a little bit of exploration without tdd to figure out what would be abstract data structure
 3. define core logic following API contract
 4. tdd-ing core logic (quickcheck? or other tools?)
