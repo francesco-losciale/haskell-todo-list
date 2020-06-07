@@ -1,10 +1,10 @@
 # haskell-todo-list
 
 1. starting from todomvc, define API and implement service (use http://todomvc.com/examples/vanilla-es6/)
-    - three views : Active, Completed, All (=Active+Completed)
-    - action add an element (default status Active)
-    - action flag element as Completed
-    - action clear completed
+    - three views : Active, Completed, All (=Active+Completed) - filter
+    - action add an element (default status Active) - add operation on list
+    - action flag element as Completed - fmap
+    - action clear completed - filter
     
 2. do a little bit of exploration without tdd to figure out what would be abstract data structure
 3. define core logic following API contract

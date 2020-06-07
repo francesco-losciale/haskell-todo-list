@@ -1,18 +1,37 @@
-import Test.QuickCheck
+import Test.Framework
+import Test.Framework.Providers.HUnit
+import Test.HUnit
 
 data Status = Complete | Active deriving (Show, Eq)
-type Item = (String, Status)
-type TodoList = [Item]
+data TodoItem = Todo String Status deriving (Show, Eq)
 
--- TODO: not this above, but [Todo]
+complete :: TodoItem -> TodoItem
+complete (Todo description status) = (Todo description Complete)
 
-todoListGen :: Gen TodoList
-todoListGen = elements [[(['A'..'Z'], Complete), (['A'..'Z'], Active)]]
+shouldCreateTodo = TestCase $
+ assertEqual
+    "should create a todo item"
+        (Todo "something" Active)
+        (Todo "something" Active)
 
-prop_TodoList_Equality :: Property
-prop_TodoList_Equality = forAll todoListGen (\todoList -> todoList == todoList)
+shouldAddTodoToList = TestCase $
+ assertEqual
+    "should add todo to list"
+        ((Todo "something" Active) : [])
+        ([Todo "something" Active])
 
--- stack test
-main :: IO ()
-main = do
-     quickCheck prop_TodoList_Equality
+shouldMarkTodoAsCompleted = TestCase $
+ assertEqual
+    "given a todo then mark it as complete"
+        (complete (Todo "something" Active))
+        (Todo "something" Complete)
+
+
+-- hUnitTestToTests: Adapt an existing HUnit test into a list of test-framework tests
+tests = hUnitTestToTests $ TestList [
+    TestLabel "shouldCreateTodo" shouldCreateTodo,
+    TestLabel "shouldAddTodoToList" shouldAddTodoToList,
+    TestLabel "shouldMarkTodoAsCompleted" shouldMarkTodoAsCompleted
+ ]
+
+main = defaultMain tests
