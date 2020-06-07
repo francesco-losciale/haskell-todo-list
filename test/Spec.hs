@@ -4,6 +4,8 @@ data Status = Complete | Active deriving (Show, Eq)
 type Item = (String, Status)
 type TodoList = [Item]
 
+-- TODO: not this above, but [Todo]
+
 todoListGen :: Gen TodoList
 todoListGen = elements [[(['A'..'Z'], Complete), (['A'..'Z'], Active)]]
 
