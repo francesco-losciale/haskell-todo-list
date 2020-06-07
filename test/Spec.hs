@@ -9,7 +9,8 @@ complete :: TodoItem -> TodoItem
 complete (Todo description status) = (Todo description Complete)
 
 apply :: (TodoItem -> TodoItem) -> TodoItem -> [TodoItem] -> [TodoItem]
-apply newStatus todo list = [ item | item <- list, item /= todo] ++ [(newStatus todo)]
+-- apply newStatus todo list = [ item | item <- list, item /= todo] ++ [(newStatus todo)]
+apply newStatus todo list = fmap (\item -> if item == todo then newStatus item else item) list
 
 shouldCreateTodo = TestCase $
  assertEqual
