@@ -11,6 +11,13 @@ complete (Todo description status) = (Todo description Complete)
 apply :: (TodoItem -> TodoItem) -> TodoItem -> [TodoItem] -> [TodoItem]
 apply newStatus todo list = [if item == todo then newStatus item else item | item <- list]
 
+isComplete :: TodoItem -> Bool
+isComplete (Todo _ Complete) = True
+isComplete (Todo _ _) = False
+
+removeCompleted :: [TodoItem] -> [TodoItem]
+removeCompleted = filter (not . isComplete)
+
 shouldCreateTodo = TestCase $
  assertEqual
     "should create a todo item"
