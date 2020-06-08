@@ -39,13 +39,23 @@ shouldMarkTodoAsCompletedInList = TestCase $
     list = [(Todo "something1" Active), (Todo "something2" Active), (Todo "something3" Active)]
     expectedList = [(Todo "something1" Active), (Todo "something2" Complete), (Todo "something3" Active)]
 
+shouldRemoveCompletedTodo = TestCase $
+ assertEqual
+    "given a todo list then remove all the completed ones"
+        expectedList
+        (removeCompleted list)
+ where
+    list = [(Todo "something1" Active), (Todo "something2" Active), (Todo "something3" Complete)]
+    expectedList = [(Todo "something1" Active), (Todo "something2" Active)]
+
 
 -- hUnitTestToTests: Adapt an existing HUnit test into a list of test-framework tests
 tests = hUnitTestToTests $ TestList [
     TestLabel "shouldCreateTodo" shouldCreateTodo,
     TestLabel "shouldAddTodoToList" shouldAddTodoToList,
     TestLabel "shouldMarkTodoAsCompleted" shouldMarkTodoAsCompleted,
-    TestLabel "shouldMarkTodoAsCompletedInList" shouldMarkTodoAsCompletedInList
+    TestLabel "shouldMarkTodoAsCompletedInList" shouldMarkTodoAsCompletedInList,
+    TestLabel "shouldRemoveCompletedTodo" shouldRemoveCompletedTodo
  ]
 
 main = defaultMain tests
