@@ -1,16 +1,18 @@
 # haskell-todo-list
 
 1. starting from todomvc, define API and implement service (use http://todomvc.com/examples/vanilla-es6/)
-    - three views : Active, Completed, All (=Active+Completed) - filter
-    - action add an element (default status Active) - add operation on list
-    - action flag element as Completed - fmap
-    - action clear completed - filter
-    
-2. do a little bit of exploration without tdd to figure out what would be abstract data structure
-3. define core logic following API contract
-4. tdd-ing core logic (quickcheck? or other tools?)
-5. docker compose postgres
-6. learn how to write to postgres database 
-7. learn how to implement rest controller
-8. wire everything and create integration test
-9. e2e testing
+    x- three views : Active, Completed, All (=Active+Completed) - filter
+    x- action add an element (default status Active) - add operation on list
+    x- action flag element as Completed - fmap
+    x- action clear completed - filter
+    - failures: validation errors
+    - add web stack: https://williamyaoh.com/posts/2019-11-16-a-dead-simple-web-stack.html
+   
+Questions:
+
+- How to provide specific error types to the user?
+- how transactionality works: for example : `createPerson . saveDatabase . sendQueue`
+    if one function fails I want to rollback. 
+    ScottW suggested compensating transactions, with undoFunctions to be passed forward.
+    Is there a better way?
+- retry mechanism?
