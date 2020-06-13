@@ -2,11 +2,17 @@ import Test.Framework
 import Test.Framework.Providers.HUnit
 import Test.HUnit
 
+import Data.Char (isSpace)
+
 data Status = Complete | Active deriving (Show, Eq)
-data TodoItem = Todo String Status deriving (Show, Eq)
+data TodoItem = Todo String Status deriving (Show, Eq) -- TODO: adding a field requires refactoring. how to fix it?
+data TodoError = InvalidDescriptionError deriving (Show, Eq)
 
 complete :: TodoItem -> TodoItem
 complete (Todo description status) = (Todo description Complete)
+
+validate :: TodoItem -> (Either TodoError TodoItem)
+validate (Todo description status) = if all isSpace description then Left InvalidDescriptionError else Right (Todo description status)
 
 apply :: (TodoItem -> TodoItem) -> TodoItem -> [TodoItem] -> [TodoItem]
 apply newStatus todo list = [if item == todo then newStatus item else item | item <- list]
@@ -23,6 +29,12 @@ shouldCreateTodo = TestCase $
     "should create a todo item"
         (Todo "something" Active)
         (Todo "something" Active)
+
+shouldTodoValidationFail = TestCase $
+ assertEqual
+    "should validation of empty description fail"
+        (validate (Todo "" Active))
+        (Left InvalidDescriptionError)
 
 shouldAddTodoToList = TestCase $
  assertEqual
