@@ -17,7 +17,11 @@ createList :: TodoItem -> [TodoItem]
 createList item = collect [] item
 
 collect :: [TodoItem] -> TodoItem -> [TodoItem]
-collect list item = mappend list [item]
+collect list item = case validate item of
+                        Left _ -> list
+                        Right item -> mappend list [item]
+-- Either returns only first error, is ok for now. we'll not handle it.
+-- TODO: improve using https://hackage.haskell.org/package/validation
 
 
 -- status management
@@ -66,6 +70,14 @@ shouldAddTodoToList = TestCase $
  where
     item = (Todo "something" Active)
 
+shouldNotAddInvalidTodoToList = TestCase $
+ assertEqual
+    "should not add invalid todo to list"
+        []
+        (collect (createList item) item)
+ where
+    item = (Todo " " Active)
+
 shouldMarkTodoAsCompleted = TestCase $
  assertEqual
     "given a todo then mark it as complete"
@@ -98,6 +110,7 @@ tests = hUnitTestToTests $ TestList [
     TestLabel "shouldTodoValidationFail" shouldTodoValidationFail,
     TestLabel "shouldCreateTodoToList" shouldCreateTodoToList,
     TestLabel "shouldAddTodoToList" shouldAddTodoToList,
+    TestLabel "shouldNotAddInvalidTodoToList" shouldNotAddInvalidTodoToList,
     TestLabel "shouldMarkTodoAsCompleted" shouldMarkTodoAsCompleted,
     TestLabel "shouldMarkTodoAsCompletedInList" shouldMarkTodoAsCompletedInList,
     TestLabel "shouldRemoveCompletedTodo" shouldRemoveCompletedTodo
