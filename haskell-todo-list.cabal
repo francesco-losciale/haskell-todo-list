@@ -27,6 +27,7 @@ source-repository head
 library
   exposed-modules:
       Lib
+      Todo
   other-modules:
       Paths_haskell_todo_list
   hs-source-dirs:
