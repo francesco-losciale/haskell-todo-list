@@ -8,11 +8,22 @@ data Status = Complete | Active deriving (Show, Eq)
 data TodoItem = Todo String Status deriving (Show, Eq) -- TODO: adding a field requires refactoring. how to fix it?
 data TodoError = InvalidDescriptionError deriving (Show, Eq)
 
-complete :: TodoItem -> TodoItem
-complete (Todo description status) = (Todo description Complete)
+-- item
 
 validate :: TodoItem -> (Either TodoError TodoItem)
 validate (Todo description status) = if all isSpace description then Left InvalidDescriptionError else Right (Todo description status)
+
+createList :: TodoItem -> [TodoItem]
+createList item = collect [] item
+
+collect :: [TodoItem] -> TodoItem -> [TodoItem]
+collect list item = mappend list [item]
+
+
+-- status management
+
+complete :: TodoItem -> TodoItem
+complete (Todo description status) = (Todo description Complete)
 
 apply :: (TodoItem -> TodoItem) -> TodoItem -> [TodoItem] -> [TodoItem]
 apply newStatus todo list = [if item == todo then newStatus item else item | item <- list]
@@ -23,6 +34,9 @@ isComplete (Todo _ _) = False
 
 removeCompleted :: [TodoItem] -> [TodoItem]
 removeCompleted = filter (not . isComplete)
+
+-- tests
+
 
 shouldCreateTodo = TestCase $
  assertEqual
@@ -36,11 +50,21 @@ shouldTodoValidationFail = TestCase $
         (validate (Todo "" Active))
         (Left InvalidDescriptionError)
 
+shouldCreateTodoToList = TestCase $
+ assertEqual
+    "should create todo to list"
+        [item]
+        (createList item)
+ where
+    item = (Todo "something" Active)
+
 shouldAddTodoToList = TestCase $
  assertEqual
     "should add todo to list"
-        ([Todo "something" Active])
-        ((Todo "something" Active) : [])
+        [item, item]
+        (collect (createList item) item)
+ where
+    item = (Todo "something" Active)
 
 shouldMarkTodoAsCompleted = TestCase $
  assertEqual
@@ -71,6 +95,8 @@ shouldRemoveCompletedTodo = TestCase $
 -- hUnitTestToTests: Adapt an existing HUnit test into a list of test-framework tests
 tests = hUnitTestToTests $ TestList [
     TestLabel "shouldCreateTodo" shouldCreateTodo,
+    TestLabel "shouldTodoValidationFail" shouldTodoValidationFail,
+    TestLabel "shouldCreateTodoToList" shouldCreateTodoToList,
     TestLabel "shouldAddTodoToList" shouldAddTodoToList,
     TestLabel "shouldMarkTodoAsCompleted" shouldMarkTodoAsCompleted,
     TestLabel "shouldMarkTodoAsCompletedInList" shouldMarkTodoAsCompletedInList,
