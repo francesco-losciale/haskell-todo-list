@@ -22,10 +22,10 @@ spec = do
        expectedList `shouldBe` (apply complete item list)
     it "given a todo list then remove all the completed ones" $ do
        expectedListWithoutComplete `shouldBe` (removeCompleted listWithComplete)
-        where
-            item = (Todo "something" Active)
-            invalidItem = (Todo " " Active)
-            list = [(Todo "something1" Active), item, (Todo "something3" Active)]
-            expectedList = [(Todo "something1" Active), (Todo "something" Complete), (Todo "something3" Active)]
-            listWithComplete = [(Todo "something1" Active), (Todo "something2" Active), (Todo "something3" Complete)]
-            expectedListWithoutComplete = [(Todo "something1" Active), (Todo "something2" Active)]
+    where
+        item = (Todo "something" Active)
+        invalidItem = (Todo " " Active)
+        list = [(Todo "something1" Active), item, (Todo "something3" Active)]
+        expectedList = [(Todo "something1" Active), (Todo "something" Complete), (Todo "something3" Active)]
+        listWithComplete = [(Todo "something1" Active), (Todo "something2" Active), (Todo "something3" Complete)]
+        expectedListWithoutComplete = [(Todo "something1" Active), (Todo "something2" Active)]
