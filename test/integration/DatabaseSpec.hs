@@ -8,5 +8,8 @@ spec :: Spec
 spec = do
   describe "Database" $ do
     it "should connect to the database and query the todo table" $ do
-       result <- (testQuery "select 1")
-       result `shouldBe` (1 :: Int)
+       todoList <- extractAllTodos
+       todoList `shouldBe` [("test", "Active"), ("test1", "Active")]
+
+-- should close connection?
+-- initialize the rows at the setup and deletes them at after all

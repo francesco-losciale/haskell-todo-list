@@ -6,8 +6,8 @@ import Database.PostgreSQL.Simple
 createConnection :: IO Connection
 createConnection = connect defaultConnectInfo { connectHost = "localhost", connectPassword = "password" }
 
-testQuery :: String -> IO Int
-testQuery sql = do
+extractAllTodos :: IO [(String, String)]
+extractAllTodos = do
                     conn <- createConnection
-                    [Only i] <- (query_ conn "select 1" :: IO [Only Int])
-                    return i
+                    result <- (query_ conn "select description, status from todo_list" :: IO [(String, String)])
+                    return result
