@@ -17,12 +17,7 @@ collect :: [TodoItem] -> TodoItem -> [TodoItem]
 collect list item = case validate item of
                         Left _ -> list
                         Right item -> mappend list [item]
--- Either returns only first error, is ok for now. we'll not handle it.
--- TODO: improve using https://hackage.haskell.org/package/validation
-
-
-
--- status management
+-- Either returns only first error TODO: https://hackage.haskell.org/package/validation
 
 complete :: TodoItem -> TodoItem
 complete (Todo description status) = (Todo description Complete)
