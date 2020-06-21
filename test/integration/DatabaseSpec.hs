@@ -5,11 +5,17 @@ import Test.Hspec
 
 
 spec :: Spec
-spec = do
+spec = beforeAll (setUp) $ do
   describe "Database" $ do
-    it "should connect to the database and query the todo table" $ do
+    it "should persist and read todo list" $ do
+       deleteAllTodos
+       rows <- writeAllTodos [todoActive, todoComplete]
        todoList <- extractAllTodos
-       todoList `shouldBe` [("test", "Active"), ("test1", "Active")]
-
--- should close connection?
--- initialize the rows at the setup and deletes them at after all
+       todoList `shouldBe` expectedTodoList
+  where
+    todoActive = ("todo marked as active", "Active")
+    todoComplete = ("todo marked as complete", "Complete")
+    expectedTodoList = [todoActive, todoComplete]
+    setUp = do
+              deleteAllTodos
+              return ()
