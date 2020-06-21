@@ -15,7 +15,7 @@ Questions:
 
 # How to run
 
-- `libpq-dev` is a required dependency if you want to build the executable. It can be 
+- `libpq-dev` is required if you want to build the executable. It can be 
 installed with `brew install postgresql`
 
 - `stack build` if you want to build the executables
