@@ -1,5 +1,6 @@
 module DatabaseSpec where
 
+import Todo
 import Database
 import Test.Hspec
 
@@ -13,8 +14,8 @@ spec = beforeAll (setUp) $ do
        todoList <- extractAllTodos
        todoList `shouldBe` expectedTodoList
   where
-    todoActive = ("todo marked as active", "Active")
-    todoComplete = ("todo marked as complete", "Complete")
+    todoActive = (Todo "todo marked as active" Active)
+    todoComplete = (Todo "todo marked as complete" Complete)
     expectedTodoList = [todoActive, todoComplete]
     setUp = do
               deleteAllTodos
