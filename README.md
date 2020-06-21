@@ -19,3 +19,5 @@ Questions:
 installed with `brew install postgresql`
 
 - `stack build` if you want to build the executables
+
+- `stack test` 
