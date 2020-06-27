@@ -7,7 +7,7 @@ import Test.Hspec
 
 spec :: Spec
 spec = beforeAll (setUp) $ do
-  describe "Database" $ do
+  describe "Postgres Database" $ do
     it "should persist and read todo list" $ do
        deleteAllTodos
        rows <- writeAllTodos [todoActive, todoComplete]
