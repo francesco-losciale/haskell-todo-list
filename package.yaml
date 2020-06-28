@@ -8,7 +8,6 @@ copyright:           "2020 Author name here"
 
 extra-source-files:
 - README.md
-- ChangeLog.md
 
 # Metadata used when publishing your package
 # synopsis:            Short description of your package
@@ -21,9 +20,12 @@ description:         Please see the README on GitHub at <https://github.com/gith
 
 dependencies:
 - base >= 4.7 && < 5
+- postgresql-simple
+- hspec
+- hspec-discover
 
 library:
-  source-dirs: src
+  source-dirs: src/
 
 executables:
   haskell-todo-list-exe:
@@ -37,12 +39,22 @@ executables:
     - haskell-todo-list
 
 tests:
-  haskell-todo-list-test:
+  haskell-todo-list-unit-test:
     main:                Spec.hs
-    source-dirs:         test
+    source-dirs:         test/unit
     ghc-options:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
     - haskell-todo-list
+
+  haskell-todo-list-integration-test:
+    main:                Spec.hs
+    source-dirs:         test/integration
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - haskell-todo-list
