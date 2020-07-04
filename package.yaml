@@ -20,9 +20,15 @@ description:         Please see the README on GitHub at <https://github.com/gith
 
 dependencies:
 - base >= 4.7 && < 5
-- postgresql-simple
 - hspec
 - hspec-discover
+- postgresql-simple
+- happstack-server
+- happstack-lite
+- wreq
+- lens
+- utf8-string
+#- bytestring
 
 library:
   source-dirs: src/
