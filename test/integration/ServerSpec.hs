@@ -9,6 +9,7 @@ import Network.Wreq
 import Control.Lens
 -- http://www.serpentine.com/wreq/tutorial.html
 
+import Control.Concurrent
 
 import Data.ByteString.Lazy.UTF8 as BLU -- from utf8-string
 
@@ -26,5 +27,5 @@ spec = beforeAll (setUp) $ do
         (r ^. responseBody) `shouldBe` (BLU.fromString "hello")
   where
     setUp = do
-              serve Nothing anApp
+              forkIO (serve Nothing anApp)
               return ()
