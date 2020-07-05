@@ -28,7 +28,7 @@ dependencies:
 - wreq
 - lens
 - utf8-string
-#- bytestring
+- aeson
 
 library:
   source-dirs: src/
