@@ -13,10 +13,21 @@ bindSt simpleState calculateNewSimpleState =
         \oldState -> let (result, newState) = simpleState oldState
                      in (calculateNewSimpleState result) newState
 
+getSt :: SimpleState state state
+getSt = \state -> (state, state)
+
+putSt :: state -> SimpleState state ()
+putSt state = \_ -> ((), state)
+
 spec :: Spec
 spec = do
-  describe "SimpleState concatenation without state change" $ do
+  describe "SimpleState concatenation WITHOUT state change" $ do
       it "Inject value with initial state of 1" $ do
         ((returnSt "value") 1) == ("value", 1)
       it "Bind to the previous another state" $ do
         ((returnSt "value") `bindSt` (\value -> returnSt("value2"))) 1 == ("value2", 1)
+  describe "SimpleState set and get" $ do
+      it "Get State gets the current state and returns it as the result" $ do
+        getSt 1 == (1, 1)
+      it "Put State ignores the current state and replaces it with the input one" $ do
+        putSt 2 1 == ((), 2)
