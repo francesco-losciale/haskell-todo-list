@@ -21,6 +21,7 @@ putSt state = \_ -> ((), state)
 
 spec :: Spec
 spec = do
+  -- we have to use bindSt in the do block in order to overwrite the hidden >>=
   describe "SimpleState concatenation WITHOUT state change" $ do
       it "Inject value with initial state of 1" $ do
         ((returnSt "value") 1) == ("value", 1)
@@ -31,3 +32,6 @@ spec = do
         getSt 1 == (1, 1)
       it "Put State ignores the current state and replaces it with the input one" $ do
         putSt 2 1 == ((), 2)
+      it "Get chained to the state transformer" $ do
+        (getSt `bindSt` (\_ -> returnSt("value"))) 1 == ("value", 1)
+
