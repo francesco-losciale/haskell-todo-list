@@ -1,5 +1,9 @@
 # haskell-todo-list
 
+TODO: 
+
+- manage serialisation
+- add transactionality
 
 - add web stack: https://williamyaoh.com/posts/2019-11-16-a-dead-simple-web-stack.html
    -- http://happstack.com/page/view-page-slug/9/happstack-lite-tutorial
