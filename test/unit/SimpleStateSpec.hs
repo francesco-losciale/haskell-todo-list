@@ -34,4 +34,6 @@ spec = do
         putSt 2 1 == ((), 2)
       it "Get chained to the state transformer" $ do
         (getSt `bindSt` (\_ -> returnSt("value"))) 1 == ("value", 1)
+      it "Overwrite the state using put" $ do
+        (getSt `bindSt` (\_ -> putSt 2) `bindSt` (\_ -> returnSt("value"))) 1 == ("value", 2)
 
