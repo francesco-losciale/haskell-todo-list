@@ -36,4 +36,6 @@ spec = do
         (getSt `bindSt` (\_ -> returnSt("value"))) 1 == ("value", 1)
       it "Overwrite the state using put" $ do
         (getSt `bindSt` (\_ -> putSt 2) `bindSt` (\_ -> returnSt("value"))) 1 == ("value", 2)
+      it "Overwrite the state using put changing order - the value is not passed by the putSt" $ do
+        (getSt `bindSt` (\_ -> returnSt("value")) `bindSt` (\_ -> putSt 2)) 1 == ((), 2)
 
