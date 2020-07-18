@@ -55,11 +55,9 @@ isBegin _     = False
 
 checkpoint :: TransactionMonad o s (TransactionStatus e a, Lbl o s (TransactionStatus e a))
 checkpoint = withCommit (\commit ->
-              withRollback (\rollback ->
   let go (Begin,      lbl) = error "TODO: nested transactions?"
-      go (Abort e,    lbl) = rollback  (Abort e,     lbl)
       go (Commit a,   lbl) = commit    (Commit a,    lbl)
-  in return (Begin, Lbl go)))
+  in return (Begin, Lbl go))
 
 withCommit :: ((forall b. a -> TransactionMonad o s b) -> TransactionMonad o s a) -> TransactionMonad o s a
 withCommit f = TransactionMonad (\s k -> unTxM (f (\a -> TransactionMonad (\s _ -> k s a))) s k)
