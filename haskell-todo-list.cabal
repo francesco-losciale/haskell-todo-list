@@ -1,0 +1,118 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 3d102f6e3dd0787767358a5a56b503b6ebd4b59602db5cb0d377582c1e580576
+
+name:           haskell-todo-list
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/githubuser/haskell-todo-list#readme>
+homepage:       https://github.com/githubuser/haskell-todo-list#readme
+bug-reports:    https://github.com/githubuser/haskell-todo-list/issues
+author:         Author name here
+maintainer:     example@example.com
+copyright:      2020 Author name here
+license:        BSD3
+build-type:     Simple
+extra-source-files:
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/githubuser/haskell-todo-list
+
+library
+  exposed-modules:
+      Database
+      Server
+      Todo
+  other-modules:
+      Paths_haskell_todo_list
+  hs-source-dirs:
+      src/
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , happstack-lite
+    , happstack-server
+    , hspec
+    , hspec-discover
+    , lens
+    , postgresql-simple
+    , utf8-string
+    , wreq
+  default-language: Haskell2010
+
+executable haskell-todo-list-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_haskell_todo_list
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , happstack-lite
+    , happstack-server
+    , haskell-todo-list
+    , hspec
+    , hspec-discover
+    , lens
+    , postgresql-simple
+    , utf8-string
+    , wreq
+  default-language: Haskell2010
+
+test-suite haskell-todo-list-integration-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      DatabaseSpec
+      ServerSpec
+      Paths_haskell_todo_list
+  hs-source-dirs:
+      test/integration
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , happstack-lite
+    , happstack-server
+    , haskell-todo-list
+    , hspec
+    , hspec-discover
+    , lens
+    , postgresql-simple
+    , utf8-string
+    , wreq
+  default-language: Haskell2010
+
+test-suite haskell-todo-list-unit-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      SimpleStateSpec
+      SimpleTransactionalStateSpec
+      StateMonadSpec
+      StateSpec
+      TodoSpec
+      Paths_haskell_todo_list
+  hs-source-dirs:
+      test/unit
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , happstack-lite
+    , happstack-server
+    , haskell-todo-list
+    , hspec
+    , hspec-discover
+    , lens
+    , postgresql-simple
+    , utf8-string
+    , wreq
+  default-language: Haskell2010
