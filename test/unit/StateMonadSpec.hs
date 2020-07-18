@@ -62,13 +62,17 @@ spec = do
       it "Overwrite the state using put" $ do
         runState (getSt >>= (\_ -> putSt 2) >>= (\_ -> returnSt("value"))) 1 == ("value", 2)
       it "Overwrite the state using put changing order - the value is not passed by the putSt" $ do
-        runState (getSt >>= (\_ -> returnSt("value")) >>= (\_ -> putSt 2)) 1 == ((), 2)
+        runState exec2 1 == ((), 2)
       it "Overwrite the state using put changing order - do something more" $ do
         runState (getSt >>= (\_ -> returnSt("value")) >>= (\value -> returnSt(take 1 value))) 1 == ("v", 1)
   describe "Can use do block now" $ do
       it "Overwrite the state using put changing order - do something more" $ do
         runState exec 1 == ("v", 1)
-        where exec = do getSt
-                        return (take 1 "value")
+  where exec = do getSt
+                  return (take 1 "value")
+        exec2 = do
+                              getSt
+                              return ("value")
+                              putSt 2
 
 
