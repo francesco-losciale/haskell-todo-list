@@ -47,13 +47,13 @@ spec = do
   describe "StateMonad: example of a state transformer" $ do
       it "Given separate value and state, apply state transformer" $ do
         (runState (return value) state) == (value, state)
---       it "Given a state, get a SimpleState, change the state, calculate a result" $ do
---         runState stateFromDoBlock state == ("result", 2)
+      it "Given a state, get a SimpleState, change the state, calculate a result" $ do
+        runState stateFromDoBlock state == ("result", 2)
   where
     value = "value"
     state = 1
---     calculateResultAndInjectInSimpleState = \value -> return("result")
---     stateFromDoBlock = do
---         getSt
---         \_ -> putSt 2
---         calculateResultAndInjectInSimpleState
+    calculateResultAndInjectInStateMonad = \value -> return("result")
+    stateFromDoBlock = do
+        getSt
+        putSt 2
+        calculateResultAndInjectInStateMonad "value"
