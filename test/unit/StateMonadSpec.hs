@@ -32,9 +32,9 @@ returnSt :: result -> State state result
 returnSt result = State $ \state -> (result, state)
 
 bindSt :: (State state result) -> (result -> State state newResult) -> (State state newResult)
-bindSt transformerWrapper calculateResultAndInjectInSimpleState =  State $
+bindSt transformerWrapper calculateResultAndInjectInStateMonad =  State $
         \state -> let (result, newState) = runState transformerWrapper state
-                  in runState (calculateResultAndInjectInSimpleState result) newState
+                  in runState (calculateResultAndInjectInStateMonad result) newState
 
 getSt :: State state state
 getSt = State $ \state -> (state, state)
