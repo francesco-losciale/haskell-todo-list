@@ -2,42 +2,25 @@ module SimpleStateSpec where
 
 import Test.Hspec
 
--- state, result are only type parameters here!
+-- aka state transformer
 type SimpleState state result = state -> (result, state)
 
 returnSt :: result -> SimpleState state result
 returnSt result = \state -> (result, state)
 
 bindSt :: (SimpleState state result) -> (result -> SimpleState state newResult) -> (SimpleState state newResult)
-bindSt simpleState calculateNewSimpleState =
-        \oldState -> let (result, newState) = simpleState oldState
-                     in (calculateNewSimpleState result) newState
-
-getSt :: SimpleState state state
-getSt = \state -> (state, state)
-
-putSt :: state -> SimpleState state ()
-putSt state = \_ -> ((), state)
+bindSt simpleState calculateResultAndInjectInSimpleState =
+        \state -> let (result, newState) = simpleState state
+                  in (calculateResultAndInjectInSimpleState result) newState
 
 spec :: Spec
 spec = do
-  -- we have to use bindSt in the do block in order to overwrite the hidden >>=
-  describe "SimpleState concatenation WITHOUT state change" $ do
-      it "Inject value with initial state of 1" $ do
-        ((returnSt "value") 1) == ("value", 1)
-      it "Bind to the previous another state" $ do
-        ((returnSt "value") `bindSt` (\value -> returnSt("value2"))) 1 == ("value2", 1)
-  describe "SimpleState set and get" $ do
-      it "Get State gets the current state and returns it as the result" $ do
-        getSt 1 == (1, 1)
-      it "Put State ignores the current state and replaces it with the input one" $ do
-        putSt 2 1 == ((), 2)
-      it "Get chained to the state transformer" $ do
-        (getSt `bindSt` (\_ -> returnSt("value"))) 1 == ("value", 1)
-      it "Overwrite the state using put" $ do
-        (getSt `bindSt` (\_ -> putSt 2) `bindSt` (\_ -> returnSt("value"))) 1 == ("value", 2)
-      it "Overwrite the state using put changing order - the value is not passed by the putSt" $ do
-        (getSt `bindSt` (\_ -> returnSt("value")) `bindSt` (\_ -> putSt 2)) 1 == ((), 2)
-      it "Overwrite the state using put changing order - do something more" $ do
-        (getSt `bindSt` (\_ -> returnSt("value")) `bindSt` (\value -> returnSt(take 1 value))) 1 == ("v", 1)
-
+  describe "Simple example of a state transformer" $ do
+      it "Given separate value and state, apply state transformer" $ do
+        ((returnSt value) state) == (value, state)
+      it "Given a state, transform the value and not the state" $ do
+        ((returnSt value) `bindSt` calculateResultAndInjectInSimpleState) state == ("result", state)
+  where
+    value = "value"
+    state = 1
+    calculateResultAndInjectInSimpleState = \value -> returnSt("result")

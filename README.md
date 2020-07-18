@@ -27,3 +27,7 @@ installed with `brew install postgresql`
 - `stack build` if you want to build the executables
 
 - `stack test` 
+
+- `stack test --dry-run` to see all the possible test you can run
+
+- `stack test --test-arguments "--match=SimpleState"` runs a specific test
