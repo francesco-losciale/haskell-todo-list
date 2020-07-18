@@ -81,8 +81,8 @@ test0 tx = do
   case s of
     _ -> commit tx "wooo"
 
--- `begin` type is `(TransactionHandle o state e a) -> (TransactionMonad o Int ())`
--- `runTxM_ type is `TransactionMonad (a,s) s a -> s -> (a, s)` , it applies the transaction state transformer
+-- `begin` type is `(TransactionHandle o state e a -> TransactionMonad o state ()) -> TransactionMonad o state (TransactionStatus e a)`
+-- `runTxM_ type is `TransactionMonad (a,s) s a -> (s -> (a, s))` - it returns transaction state transformer
 runTest0 :: [(TransactionStatus String String, Int)]
 runTest0 = fmap (runTxM_ (begin test0)) [4] -- we lift `s -> (a, s)` over the array
 
