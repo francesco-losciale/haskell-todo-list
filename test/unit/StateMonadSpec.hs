@@ -37,7 +37,7 @@ putSt state = State $ \_ -> ((), state)
 
 spec :: Spec
 spec = do
-  describe "StateMonad: example of a state transformer" $ do
+  describe "StateMonad: example of a state monad" $ do
       it "Given separate value and state, apply state transformer" $ do
         (runState (return value) state) == (value, state)
       it "Given a state, get a SimpleState, change the state, calculate a result" $ do
