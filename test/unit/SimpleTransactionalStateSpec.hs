@@ -7,21 +7,21 @@ import Control.Monad (when)
 import Test.Hspec
 
 -- | Transaction Status.
-data TransactionStatus e a
+data TransactionStatus e result
   = Begin
-  | Abort (Maybe e)       -- ^ Reverted  state, returned an error.
-  | Commit a              -- ^ Committed state, returned a result.
+  | Abort (Maybe e)            -- ^ Reverted  state, returned an error.
+  | Commit result              -- ^ Committed state, returned a result.
   deriving(Eq,Ord,Read,Show)
 
 -- | A transaction handle.
-newtype TransactionHandle o state e a  = TransactionHandle  {unTx :: Lbl o state (TransactionStatus e a)}
+newtype TransactionHandle o state e result  = TransactionHandle  {unTx :: Lbl o state (TransactionStatus e result)}
 
 -- | The transaction monad. A State monad, with transactional state.
 newtype TransactionMonad o s a   = TransactionMonad {unTxM :: s -> (s -> a -> o) -> o}
 
 instance Applicative (TransactionMonad o s) where
-    pure = return
-    fs <*> s = do {f <- fs; v <- s; return (f v) }
+  pure = return
+  fs <*> s = do {f <- fs; v <- s; return (f v) }
 instance Functor (TransactionMonad o s) where
   fmap f (TransactionMonad g) = TransactionMonad (\s k -> g s (\s a -> k s (f a)))
 instance Monad (TransactionMonad o s) where
@@ -37,33 +37,32 @@ get :: TransactionMonad o s s
 get = TransactionMonad (\s k -> k s s)
 
 -- | Begin a transaction. @begin@ takes a function
---  which represents this transaction.
-begin :: (TransactionHandle o state e a -> TransactionMonad o state ()) -> TransactionMonad o state (TransactionStatus e a)
-begin f = withRollback (\abort -> do
-            (stat, lbl) <- checkpoint
-            when (isBegin stat)
+-- withCommit :: ((forall b. result -> TransactionMonad o s b) -> TransactionMonad o s result) -> TransactionMonad o s result
+begin :: (TransactionHandle o state e result -> TransactionMonad o state ()) -> TransactionMonad o state (TransactionStatus e result)
+begin f = withCommit (\abort -> do
+            (transactionStatus, lbl) <- checkpoint
+            when (isBegin transactionStatus)
               (f (TransactionHandle lbl) >> abort (Abort Nothing))
-            return stat)
+            return transactionStatus)
 
 -- | Commit state, return a result.
-commit   :: TransactionHandle o state e a ->       a -> TransactionMonad o state ()
-commit    (TransactionHandle lbl) a = jump lbl (Commit a)
+commit   :: TransactionHandle o state e result ->       result -> TransactionMonad o state ()
+commit    (TransactionHandle lbl) result = jump lbl (Commit result)
 
-isBegin :: TransactionStatus e a -> Bool
+isBegin :: TransactionStatus e result -> Bool
 isBegin Begin = True
 isBegin _     = False
 
-checkpoint :: TransactionMonad o s (TransactionStatus e a, Lbl o s (TransactionStatus e a))
+-- withCommit :: ((forall b. result -> TransactionMonad o s b) -> TransactionMonad o s result) -> TransactionMonad o s result
+checkpoint :: TransactionMonad o s (TransactionStatus e result, Lbl o s (TransactionStatus e result))
 checkpoint = withCommit (\commit ->
   let go (Begin,      lbl) = error "TODO: nested transactions?"
-      go (Commit a,   lbl) = commit    (Commit a,    lbl)
+      go (Commit result,   lbl) = commit    (Commit result,    lbl)
   in return (Begin, Lbl go))
 
-withCommit :: ((forall b. a -> TransactionMonad o s b) -> TransactionMonad o s a) -> TransactionMonad o s a
-withCommit f = TransactionMonad (\s k -> unTxM (f (\a -> TransactionMonad (\s _ -> k s a))) s k)
-
-withRollback :: ((forall b. a -> TransactionMonad o s b) -> TransactionMonad o s a) -> TransactionMonad o s a
-withRollback f = TransactionMonad (\s k -> unTxM (f (\a -> TransactionMonad (\_ _ -> k s a))) s k)
+-- newtype TransactionMonad o s a   = TransactionMonad {unTxM :: s -> (s -> a -> o) -> o
+withCommit :: ((forall b. result -> TransactionMonad o state b) -> TransactionMonad o state result) -> TransactionMonad o state result
+withCommit f = TransactionMonad (\state k -> unTxM (f (\result -> TransactionMonad (\state _ -> k state result))) state k)
 
 jump :: Lbl o s a -> a -> TransactionMonad o s b
 jump (Lbl k) a = k (a, Lbl k) >> undefined
@@ -72,20 +71,19 @@ jump (Lbl k) a = k (a, Lbl k) >> undefined
 runTxM_ :: TransactionMonad (a,s) s a -> s -> (a, s)
 runTxM_ (TransactionMonad g) s = g s (\s a -> (a, s))
 
+-- commit   :: TransactionHandle o state e result ->       result -> TransactionMonad o state ()
+-- nota bene: the transactionHandle is passed in the begin function expression
 test0 :: TransactionHandle o Int String String -> TransactionMonad o Int ()
-test0 tx = do
+test0 transactionHandle = do
   s <- get
   set 99
   case s of
-    _ -> commit tx "wooo"
+    _ -> commit transactionHandle "wooo"
 
--- `begin` type is `(TransactionHandle o state e a -> TransactionMonad o state ()) -> TransactionMonad o state (TransactionStatus e a)`
--- `runTxM_ type is `TransactionMonad (a,s) s a -> (s -> (a, s))` - it returns transaction state transformer
-runTest0 :: [(TransactionStatus String String, Int)]
-runTest0 = fmap (runTxM_ (begin test0)) [4] -- we lift `s -> (a, s)` over the array
-
-spec :: Spec
+-- test0 :: TransactionHandle o Int String String -> TransactionMonad o Int ()
+-- begin :: (TransactionHandle o state e result -> TransactionMonad o state ()) -> TransactionMonad o state (TransactionStatus e result)
+-- runTxM_ :: TransactionMonad (a,s) s a -> (s -> (a, s))
 spec = do
   describe "SimpleTransactionalState: example of a transactional state" $ do
-      it "Commit the transaction" $ do
-        runTest0 == [(Commit "wooo",99)]
+      it "Input value of 4 to test0 should commit the transaction" $ do
+        (runTxM_ (begin test0)) 4 == (Commit "wooo",99)
