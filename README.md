@@ -19,6 +19,19 @@ Questions:
 - retry mechanism?
 
 
+# State examples
+
+In the repositories it's possible to find three examples of a State handling in Haskell, 
+developed for learning purporses.
+
+The first to look at is SimpleState that is a synonym of a state transformer. Since it is a synonym,
+it's easier to understand how the state works, because the data constructor is not needed.
+
+Second one is State, same thing with a proper newtype
+
+Third is the StateMonad, with typeclasses implementation of Functor, Applicative and Monad. 
+At this point it's possible to use the code in a do-block because of syntactic sugar from the compiler (>>=)
+
 # How to run
 
 - `libpq-dev` is required if you want to build the executable. It can be 
