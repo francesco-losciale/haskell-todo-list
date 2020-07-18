@@ -21,7 +21,7 @@ putSt state = \_ -> ((), state)
 
 spec :: Spec
 spec = do
-  describe "Simple example of a state transformer" $ do
+  describe "SimpleState: example of a state transformer" $ do
       it "Given separate value and state, apply state transformer" $ do
         ((returnSt value) state) == (value, state)
       it "Given a state, transform the value but not the state" $ do
