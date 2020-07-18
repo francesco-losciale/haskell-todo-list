@@ -1,14 +1,11 @@
 module StateMonadSpec where
 
-import Control.Monad
 
 import Test.Hspec
 
--- We use haskell record syntax to define the type.
--- The type of runState is
---      State state result -> (state -> (result, state))
-
--- state, result are only type parameters here!
+-- Haskell record type that wraps the state transformer.
+-- The type of `runState` is :
+--  State state result -> (state -> (result, state))
 newtype State state result = State {
     runState :: state -> (result, state)
 }
@@ -34,9 +31,10 @@ instance Monad (State state) where
 returnSt :: result -> State state result
 returnSt result = State $ \state -> (result, state)
 
-bindSt :: State state result -> (result -> State state newResult) -> (State state newResult)
-bindSt initialState calculateNewState = State $ \oldState -> let (result, newState) = runState initialState oldState
-                                                     in runState (calculateNewState result) newState
+bindSt :: (State state result) -> (result -> State state newResult) -> (State state newResult)
+bindSt transformerWrapper calculateResultAndInjectInSimpleState =  State $
+        \state -> let (result, newState) = runState transformerWrapper state
+                  in runState (calculateResultAndInjectInSimpleState result) newState
 
 getSt :: State state state
 getSt = State $ \state -> (state, state)
@@ -46,33 +44,16 @@ putSt state = State $ \_ -> ((), state)
 
 spec :: Spec
 spec = do
-  -- we have to use bindSt in the do block in order to overwrite the hidden >>=
-  describe "StateMonad concatenation WITHOUT state change" $ do
-      it "Inject value with initial state of 1" $ do
-        runState (returnSt "value") 1 == ("value", 1)
-      it "Bind to the previous another state" $ do
-        runState ((returnSt "value") >>= (\value -> returnSt("value2"))) 1 == ("value2", 1)
-  describe "StateMonad set and get" $ do
-      it "Get State gets the current state and returns it as the result" $ do
-        runState getSt 1 == (1, 1)
-      it "Put State ignores the current state and replaces it with the input one" $ do
-        (runState (putSt 2)) 1 == ((), 2)
-      it "Get chained to the state transformer" $ do
-        runState (getSt >>= (\_ -> returnSt("value"))) 1 == ("value", 1)
-      it "Overwrite the state using put" $ do
-        runState (getSt >>= (\_ -> putSt 2) >>= (\_ -> returnSt("value"))) 1 == ("value", 2)
-      it "Overwrite the state using put changing order - the value is not passed by the putSt" $ do
-        runState exec2 1 == ((), 2)
-      it "Overwrite the state using put changing order - do something more" $ do
-        runState (getSt >>= (\_ -> returnSt("value")) >>= (\value -> returnSt(take 1 value))) 1 == ("v", 1)
-  describe "Can use do block now" $ do
-      it "Overwrite the state using put changing order - do something more" $ do
-        runState exec 1 == ("v", 1)
-  where exec = do getSt
-                  return (take 1 "value")
-        exec2 = do
-                              getSt
-                              return ("value")
-                              putSt 2
-
-
+  describe "StateMonad: example of a state transformer" $ do
+      it "Given separate value and state, apply state transformer" $ do
+        (runState (return value) state) == (value, state)
+--       it "Given a state, get a SimpleState, change the state, calculate a result" $ do
+--         runState stateFromDoBlock state == ("result", 2)
+  where
+    value = "value"
+    state = 1
+--     calculateResultAndInjectInSimpleState = \value -> return("result")
+--     stateFromDoBlock = do
+--         getSt
+--         \_ -> putSt 2
+--         calculateResultAndInjectInSimpleState
