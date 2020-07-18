@@ -1,6 +1,5 @@
 module StateMonadSpec where
 
-
 import Test.Hspec
 
 -- Haskell record type that wraps the state transformer.
@@ -13,11 +12,11 @@ newtype State state result = State {
 instance Functor (State state) where
     function `fmap` state = do {
             value <- state;
-            returnSt (function value)
+            return (function value)
     }
 
 instance Applicative (State state) where
-    pure = returnSt
+    pure = return
     functionState <*> state = do {
         function <- functionState;
         value <- state;
@@ -25,16 +24,10 @@ instance Applicative (State state) where
     }
 
 instance Monad (State state) where
-    return = returnSt
-    state >>= function = state `bindSt` function
-
-returnSt :: result -> State state result
-returnSt result = State $ \state -> (result, state)
-
-bindSt :: (State state result) -> (result -> State state newResult) -> (State state newResult)
-bindSt transformerWrapper calculateResultAndInjectInStateMonad =  State $
-        \state -> let (result, newState) = runState transformerWrapper state
-                  in runState (calculateResultAndInjectInStateMonad result) newState
+    return result = State $ \state -> (result, state)
+    (>>=) transformerWrapper calculateResultAndInjectInStateMonad =  State $
+            \state -> let (result, newState) = runState transformerWrapper state
+                      in runState (calculateResultAndInjectInStateMonad result) newState
 
 getSt :: State state state
 getSt = State $ \state -> (state, state)
