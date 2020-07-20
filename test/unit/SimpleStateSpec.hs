@@ -22,19 +22,19 @@ putSt state = \_ -> ((), state)
 spec :: Spec
 spec = do
   describe "SimpleState: example of a state transformer" $ do
-      it "Given separate value and state, apply state transformer" $ do
+      it "Applies state transformer on separate value and state" $ do
         ((returnSt value) state) == (value, state)
-      it "Given a state, transform the value but not the state" $ do
+      it "Transforms the value but not the state" $ do
         ((returnSt value) `bindSt` calculateResultAndInjectInSimpleState) state == ("result", state)
-      it "Given a state, get a SimpleState out of it" $ do
+      it "Gets a SimpleState out of it" $ do
         getSt state == (state, state)
-      it "Given a state, ignore it and replace with a new one" $ do
+      it "Ignores a state and replace it with a new one" $ do
         putSt 2 state == ((), 2)
-      it "Given a state, get a SimpleState out of it and bind with putSt" $ do
+      it "Gets a SimpleState and binds it with putSt" $ do
         (getSt `bindSt` putSt) state == ((), 1)
-      it "Given a state, get a SimpleState out of it and bind with function that changes state" $ do
+      it "Gets a SimpleState and binds it with a function that changes state" $ do
         (getSt `bindSt` (\_ -> putSt 2)) state == ((), 2)
-      it "Given a state, get a SimpleState, change the state, calculate a result" $ do
+      it "Gets a SimpleState, changes the state, calculates a result" $ do
         (getSt `bindSt` (\_ -> putSt 2) `bindSt` calculateResultAndInjectInSimpleState) state == ("result", 2)
   where
     value = "value"
