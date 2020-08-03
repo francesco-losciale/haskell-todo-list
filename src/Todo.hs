@@ -7,11 +7,11 @@ data TodoError = InvalidDescriptionError deriving (Show, Eq)
 
 -- utils
 
-validate :: TodoItem -> (Either TodoError TodoItem)
+validate :: TodoItem -> Either TodoError TodoItem
 validate (Todo description status) = if all isSpace description then Left InvalidDescriptionError else Right (Todo description status)
 
 createList :: TodoItem -> [TodoItem]
-createList item = collect [] item
+createList = collect []
 
 collect :: [TodoItem] -> TodoItem -> [TodoItem]
 collect list item = case validate item of
@@ -20,7 +20,7 @@ collect list item = case validate item of
 -- Either returns only first error TODO: https://hackage.haskell.org/package/validation
 
 complete :: TodoItem -> TodoItem
-complete (Todo description status) = (Todo description Complete)
+complete (Todo description status) = Todo description Complete
 
 apply :: (TodoItem -> TodoItem) -> TodoItem -> [TodoItem] -> [TodoItem]
 apply newStatus todo list = [if item == todo then newStatus item else item | item <- list]

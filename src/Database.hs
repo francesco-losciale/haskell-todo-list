@@ -32,8 +32,7 @@ createConnection = connect defaultConnectInfo { connectHost = "localhost", conne
 extractAllTodos :: IO [TodoItem]
 extractAllTodos = do
                     conn <- createConnection
-                    result <- (query_ conn "select description, status from todo_list" :: IO [TodoItem])
-                    return result
+                    query_ conn "select description, status from todo_list" :: IO [TodoItem]
 
 writeAllTodos :: [TodoItem] -> IO Int64
 writeAllTodos todoList = do
