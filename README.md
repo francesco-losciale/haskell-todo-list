@@ -44,3 +44,6 @@ installed with `brew install postgresql`
 - `stack test --dry-run` to see all the possible test you can run
 
 - `stack test --test-arguments "--match=SimpleState"` runs a specific test
+
+
+ To run hlint, cd to haskell-todo-list and run `hlint .`
