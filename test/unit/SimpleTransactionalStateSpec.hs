@@ -39,11 +39,11 @@ get = TransactionMonad (\s k -> k s s)
 -- | Begin a transaction. @begin@ takes a function
 -- withCommit :: ((forall b. result -> TransactionMonad o s b) -> TransactionMonad o s result) -> TransactionMonad o s result
 begin :: (TransactionHandle o state e result -> TransactionMonad o state ()) -> TransactionMonad o state (TransactionStatus e result)
-begin f = withCommit (\abort -> do
+begin f =  do
             (transactionStatus, lbl) <- checkpoint
             when (isBegin transactionStatus)
-              (f (TransactionHandle lbl) >> abort (Abort Nothing))
-            return transactionStatus)
+              (f (TransactionHandle lbl)) -- lbl = Lbl go = Lbl commit
+            return transactionStatus
 
 -- | Commit state, return a result.
 commit   :: TransactionHandle o state e result ->       result -> TransactionMonad o state ()
@@ -56,11 +56,11 @@ isBegin _     = False
 -- withCommit :: ((forall b. result -> TransactionMonad o s b) -> TransactionMonad o s result) -> TransactionMonad o s result
 checkpoint :: TransactionMonad o s (TransactionStatus e result, Lbl o s (TransactionStatus e result))
 checkpoint = withCommit (\commit ->
-  let go (Begin,      lbl) = error "TODO: nested transactions?"
-      go (Commit result,   lbl) = commit    (Commit result,    lbl)
+  let go (Commit result,   lbl) = commit    (Commit result,    lbl)
   in return (Begin, Lbl go))
 
 -- newtype TransactionMonad o s a   = TransactionMonad {unTxM :: s -> (s -> a -> o) -> o
+-- `(\result -> TransactionMonad (\state _ -> k state result))` = this is the function passed to \commit in checkpoint
 withCommit :: ((forall b. result -> TransactionMonad o state b) -> TransactionMonad o state result) -> TransactionMonad o state result
 withCommit f = TransactionMonad (\state k -> unTxM (f (\result -> TransactionMonad (\state _ -> k state result))) state k)
 
@@ -78,6 +78,7 @@ test0 transactionHandle = do
   s <- get
   set 99
   case s of
+    1 -> undefined
     _ -> commit transactionHandle "wooo"
 
 -- test0 :: TransactionHandle o Int String String -> TransactionMonad o Int ()
@@ -86,4 +87,4 @@ test0 transactionHandle = do
 spec = do
   describe "SimpleTransactionalState: example of a transactional state" $ do
       it "Input value of 4 to test0 should commit the transaction" $ do
-        (runTxM_ (begin test0)) 4 == (Commit "wooo",99)
+        runTxM_ (begin test0) 4 == (Commit "wooo",99)
