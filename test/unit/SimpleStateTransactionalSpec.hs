@@ -5,10 +5,12 @@ import StateMonadSpec
 
 data TransactionalStep = Begin deriving Eq
 
-begin :: (a -> b) -> a -> (b, TransactionalStep)
-begin f x = (f x, Begin)
+begin :: (Integer -> Integer) -> State Integer TransactionalStep
+begin f = do 
+            putSt (f 1)
+            return(Begin)
 
 spec = do
   describe "SimpleStateTransactional: basic functions" $ do
-      it "Takes a function as input, begin transaction, executes it and return result" $ do
-        begin (+1) 1 == (2, Begin)       
+      it "Takes function and state, executes function and return transaction status" $ do
+        runState (begin (+1)) 1 == (Begin,2)       
