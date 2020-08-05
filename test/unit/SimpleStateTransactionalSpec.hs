@@ -3,14 +3,33 @@ module SimpleStateTransactionalSpec where
 import Test.Hspec
 import StateMonadSpec
 
-data TransactionalStep = Begin deriving Eq
+data TransactionalStep = Begin | Commit deriving Eq
 
-begin :: (Integer -> Integer) -> State Integer TransactionalStep
-begin f = do 
-            putSt (f 1)
-            return(Begin)
+-- commit :: (State state result) -> State Integer TransactionalStep
+
+begin :: State state TransactionalStep
+begin = do 
+          getSt 
+          return(Begin)
+
+commit :: State state TransactionalStep
+commit = do 
+          getSt 
+          return(Commit)          
+
+atomically :: (Integer -> Integer) -> State Integer TransactionalStep
+atomically f = do 
+            s <- getSt
+            case s of
+              1 -> putSt (f s) >> begin
+              2 -> putSt (f s) >> commit
+
 
 spec = do
   describe "SimpleStateTransactional: basic functions" $ do
-      it "Takes function and state, executes function and return transaction status" $ do
-        runState (begin (+1)) 1 == (Begin,2)       
+      it "Can open transactions" $ do
+        runState (atomically (+1)) 1 == (Begin,1)       
+      it "Can commit transactions" $ do
+        runState (atomically (+1)) 2 == (Commit,3)           
+   
+   
