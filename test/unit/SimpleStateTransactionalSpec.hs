@@ -5,24 +5,26 @@ import StateMonadSpec
 
 data TransactionalStep = Begin | Commit | Rollback deriving Eq
 
-begin :: State (Integer, Integer) TransactionalStep
+type TransactionalState = (Integer, Integer)
+
+begin :: State TransactionalState TransactionalStep
 begin = do 
           (s,s') <- getSt
           putSt (s',s') 
           return(Begin)
 
-commit :: State (Integer, Integer) TransactionalStep
+commit :: State TransactionalState TransactionalStep
 commit = do 
           getSt 
           return(Commit)          
 
-rollback :: State (Integer, Integer) TransactionalStep
+rollback :: State TransactionalState TransactionalStep
 rollback = do
           (s,s') <- getSt      
           putSt (s',s')
           return(Rollback) 
 
-atomically :: (Integer -> Integer) -> State (Integer, Integer) TransactionalStep
+atomically :: (Integer -> Integer) -> State TransactionalState TransactionalStep
 atomically f = do 
             (s, s') <- getSt
             case s of
