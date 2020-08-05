@@ -5,8 +5,6 @@ import StateMonadSpec
 
 data TransactionalStep = Begin | Commit deriving Eq
 
--- commit :: (State state result) -> State Integer TransactionalStep
-
 begin :: State Integer TransactionalStep
 begin = do 
           getSt 
