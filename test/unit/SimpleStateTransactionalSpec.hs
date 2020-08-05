@@ -7,12 +7,12 @@ data TransactionalStep = Begin | Commit deriving Eq
 
 -- commit :: (State state result) -> State Integer TransactionalStep
 
-begin :: State state TransactionalStep
+begin :: State Integer TransactionalStep
 begin = do 
           getSt 
           return(Begin)
 
-commit :: State state TransactionalStep
+commit :: State Integer TransactionalStep
 commit = do 
           getSt 
           return(Commit)          
