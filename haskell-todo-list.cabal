@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e73ca21474db7e8e49fafb3a5ead3e38178195c3859618f6b26421332a05427f
+-- hash: 1a3c8c54ffe84ec31dbfe1643ea4cdcf25586e180ea4bb9ca8988937e5276e6d
 
 name:           haskell-todo-list
 version:        0.1.0.0
@@ -95,11 +95,10 @@ test-suite haskell-todo-list-unit-test
   main-is: Spec.hs
   other-modules:
       SimpleStateSpec
-      SimpleStateTransactionalSpec
-      SimpleTransactionalStateSpec
       StateMonadSpec
       StateSpec
       StateTransactionalFromScratchTry
+      StateTransMonadSpec
       TodoSpec
       Paths_haskell_todo_list
   hs-source-dirs:
