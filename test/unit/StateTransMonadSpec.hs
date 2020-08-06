@@ -22,9 +22,9 @@ instance Applicative (State state) where
 
 instance Monad (State state) where
     return result = State $ \state -> (result, state)
-    (>>=) transformerWrapper calculateResultAndInjectInStateMonad =  State $
-            \state -> let (result, newState) = runState transformerWrapper state
-                      in runState (calculateResultAndInjectInStateMonad result) newState
+    (>>=) ma f =  State $
+            \s -> let (result, s') = runState ma s
+                      in runState (f result) s'
 
 -- t transactional state, s committed state
 getSt :: State (s, t) t
@@ -33,8 +33,8 @@ getSt = State $ \(s, t) -> (t, (s,t))
 putSt :: x -> State (s, x) ()
 putSt x = State $ \(s, t) -> ((), (s, x))
 
-beginSt :: s -> (s,s)
-beginSt s = (s,s)
+buildSt :: s -> (s,s)
+buildSt s = (s,s)
 
 commitSt :: State (t, t) ()
 commitSt = State $ \(s, t) -> ((), (t, t))
@@ -53,6 +53,7 @@ spec = do
         runState commitTest state == ("result", (2,3)) -- (committed state, transactional state)
   where
     value = "value"
-    state = beginSt 1
+    state = buildSt 1
     rollbackTest = do { putSt 2; rollbackSt; return("result")}
-    commitTest = do { putSt 2; commitSt; return("result"); putSt 3; return("result")}
+    -- commitTest = do { putSt 2; commitSt; return("result"); putSt 3; return("result")}
+    commitTest = return("result") >>= \_ -> putSt 2 >>= \s -> commitSt >>= \s -> return("result") >>= \s -> putSt 3 >>= \s -> return("result")
