@@ -47,7 +47,7 @@ spec = do
       it "Can rollback state changes" $ do
         runState rollbackTest state == ("result", (1,1))
       it "Can commit state changes" $ do
-        runState rollbackTest state == ("result", (1,1))
+        runState commitTest state == ("result", (2,2))
   where
     value = "value"
     state = (1,1)
