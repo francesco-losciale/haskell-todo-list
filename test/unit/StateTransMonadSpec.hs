@@ -26,12 +26,15 @@ instance Monad (State state) where
             \state -> let (result, newState) = runState transformerWrapper state
                       in runState (calculateResultAndInjectInStateMonad result) newState
 
--- t transactional state, s committed state, r result
+-- t transactional state, s committed state
 getSt :: State (s, t) t
 getSt = State $ \(s, t) -> (t, (s,t))
 
 putSt :: x -> State (s, x) ()
 putSt x = State $ \(s, t) -> ((), (s, x))
+
+beginSt :: s -> (s,s)
+beginSt s = (s,s)
 
 commitSt :: State (t, t) ()
 commitSt = State $ \(s, t) -> ((), (t, t))
@@ -47,9 +50,9 @@ spec = do
       it "Can rollback state changes" $ do
         runState rollbackTest state == ("result", (1,1))
       it "Can commit state changes" $ do
-        runState commitTest state == ("result", (2,2))
+        runState commitTest state == ("result", (2,3)) -- (committed state, transactional state)
   where
     value = "value"
-    state = (1,1)
+    state = beginSt 1
     rollbackTest = do { putSt 2; rollbackSt; return("result")}
-    commitTest = do { putSt 2; commitSt; return("result")}
+    commitTest = do { putSt 2; commitSt; return("result"); putSt 3; return("result")}
