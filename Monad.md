@@ -1,6 +1,8 @@
-# Monad definition
+# Monad definition 
 
-### Problem
+Notes collected watching [Bartosz Milewski](https://www.youtube.com/watch?v=gHiyzctYqZ0) lecture about Monad.
+
+## Problem
 
 Compose two pure functions so that, on the result of each of them, an additional action or effect is executed. 
 
@@ -22,7 +24,7 @@ Since the `.` operator is used to compose functions with the type of the output 
 of `g`, ...
 the `(>=>)` operator is used to match an embellished output (for example, with logging) to the input of another function. 
 
-### Solution
+## Solution
 
 ```haskell
 (>=>) :: (a -> m b) -> (b -> m c) -> (a -> m c)
@@ -65,7 +67,9 @@ We can simply fix this introducing the function `join`:
 
 ```haskell
 join :: m (m a) -> m a 
+join = ...
 ```
+The implementation depends on the kind of Monad itself - see [1]
 
 So, the final definition of `(>>=)` is ...
 
@@ -76,3 +80,5 @@ m a >>= f = join fmap (a -> m b) m a
 m a >>= f = join m (m b)
 m a >>= f = m b
 ```
+
+[1] - Monad join function - https://stackoverflow.com/questions/3382210/monad-join-function
