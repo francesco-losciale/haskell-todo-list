@@ -2,7 +2,7 @@
 
 Side project to test Haskell learnings.
 
-What learned so far: 
+What I learned so far: 
 
 - To learn Monads, the State monad has been rewritten from scratch following these steps:
 
