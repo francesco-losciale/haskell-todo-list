@@ -1,49 +1,51 @@
-# haskell-todo-list
+# Haskell Todo List - work in progress
 
-TODO: 
+Side project to test Haskell learnings
 
-- manage serialisation
-- add transactionality
+As part of this project, the following significant problems have been solved: 
 
-- add web stack: https://williamyaoh.com/posts/2019-11-16-a-dead-simple-web-stack.html
-   -- http://happstack.com/page/view-page-slug/9/happstack-lite-tutorial
-   -- http://www.serpentine.com/wreq/tutorial.html
-   
-Questions:
+- To learn Monads, the State monad has been rewritten from scratch:
 
-- How to provide specific error types to the user?
-- how transactionality works: for example : `createPerson . saveDatabase . sendQueue`
-    if one function fails I want to rollback. 
-    ScottW suggested compensating transactions, with undoFunctions to be passed forward.
-    Is there a better way?
-- retry mechanism?
+    1. Firstly, implemented an alias of a state transformer function - see `State.SimpleState`.
+    2. Secondly, replaced the alias with a constructor and added the accessor function to apply the state transformer out of the monad - see `State.State`.
+    3. Finally, created the Monad instance for State, reusing the bind and the return functions. This State monad can be used in a do block - see `State`.StateMonad`
+    4. Also, implemented a state monad with a transactional state inside - `see TransactionalStateMonad`.
 
+- Implemented a back-end web stack application using the following libraries:
+    - hspec
+    - hspec-discover
+    - postgresql-simple
+    - happstack-server
+    - happstack-lite (<-- can this be removed???)
+    - wreq
+    - lens
+    - utf8-string
+    - aeson
 
-# State examples
-
-In the repositories it's possible to find three examples of a State handling in Haskell, 
-developed for learning purporses.
-
-The first to look at is SimpleState that is a synonym of a state transformer. Since it is a synonym,
-it's easier to understand how the state works, because the data constructor is not needed.
-
-Second one is State, same thing with a proper newtype
-
-Third is the StateMonad, with typeclasses implementation of Functor, Applicative and Monad. 
-At this point it's possible to use the code in a do-block because of syntactic sugar from the compiler (>>=)
 
 # How to run
 
-- `libpq-dev` is required if you want to build the executable. It can be 
-installed with `brew install postgresql`
+Pre-requisites:
 
-- `stack build` if you want to build the executables
-
-- `stack test` 
-
-- `stack test --dry-run` to see all the possible test you can run
-
-- `stack test --test-arguments "--match=SimpleState"` runs a specific test
+- To build, you need `libpq-dev` that can be installed with `brew install postgresql` (<-- can you improve this???)
+- To run tests, you need Docker Machine
 
 
- To run hlint, cd to haskell-todo-list and run `hlint .`
+- Compile and build executables: `stack build` 
+
+- Compile and run all tests: `stack test` 
+
+- List the tests you can run individually: `stack test --dry-run` 
+
+- Run an individual test: `stack test --test-arguments "--match=SimpleState"` 
+
+- If Hlint is installed, run `hlint .` in the project root directory
+
+
+# TODO & Open points
+
+- Modules should export only specific name.
+- How to provide specific error types to the user? Learn Either
+- Use `Data.Cache` to temporarily save list without peristing it
+- Can you see any use case for STM?
+- Can you see any use case for Concurrency?
