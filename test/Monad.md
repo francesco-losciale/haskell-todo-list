@@ -1,4 +1,4 @@
-# Monoid definition
+# Monad definition
 
 ### Problem
 
