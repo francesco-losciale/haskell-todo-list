@@ -1,7 +1,4 @@
 module Todo (
-  --   validate
-  -- , collect
-  -- , 
   addTodo
   , emptyCollection
   , complete
@@ -22,16 +19,21 @@ data TodoItem = Todo {
 
 data Status = Complete | Active deriving (Show, Eq)
 
-data TodoError = InvalidDescriptionError deriving (Show, Eq)
+data TodoError = InvalidDescriptionError | InvalidStatusError deriving (Show, Eq)
 
 addTodo :: TodoItem -> [TodoItem] -> [Either TodoError TodoItem]
 addTodo item list = fmap validate (item : list)
                     where 
-                      validate item = if all isSpace (description item) then
-                        Left InvalidDescriptionError
-                      else 
-                        Right item
+                      validate item = 
+                        if all isSpace (description item) then
+                          Left InvalidDescriptionError
+                        else 
+                          if state item == Complete then
+                            Left InvalidStatusError
+                          else
+                            Right item
 
+emptyCollection :: [TodoItem]
 emptyCollection = []
 
 complete :: TodoItem -> TodoItem
