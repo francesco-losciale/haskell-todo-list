@@ -2,7 +2,7 @@
 
 Side project to test Haskell learnings.
 
-As part of this project, the following significant problems have been solved: 
+As part of this project, the most significant solved problems are: 
 
 - To learn Monads, the State monad has been rewritten from scratch following these steps:
 
@@ -44,8 +44,10 @@ Pre-requisites:
 
 # TODO & Open points
 
-- Modules should export only specific name.
+- Review/refactor current unit tests
+- Refactoring & Improvements of Todo code
 - How to provide specific error types to the user? Learn Either
+- Learn Lens - watch talk from Pawel Szulc on Lenses - https://vimeo.com/user119686798
 - Use `Data.Cache` to temporarily save list without peristing it
 - Can you see any use case for STM?
 - Can you see any use case for Concurrency?

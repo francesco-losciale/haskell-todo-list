@@ -1,4 +1,16 @@
-module Todo where
+module Todo (
+    validate
+  , createList
+  , collect
+  , complete
+  , apply
+  , isComplete
+  , removeCompleted
+  , TodoError (..)
+  , TodoItem (..)
+  , Status (..)
+) where
+
 import Data.Char (isSpace)
 
 data Status = Complete | Active deriving (Show, Eq)

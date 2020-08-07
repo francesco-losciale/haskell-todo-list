@@ -1,5 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Database where
+module Database (
+    extractAllTodos
+  , writeAllTodos
+  , deleteAllTodos
+) where
 
 import Todo
 import Data.Int
