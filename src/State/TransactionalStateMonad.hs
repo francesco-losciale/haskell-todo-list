@@ -1,6 +1,5 @@
-module StateMonadSpec where
+module State.TransactionalStateMonad where
 
-import Test.Hspec
 
 -- Haskell record type that wraps the state transformer.
 -- The type of `runState` is :
@@ -35,18 +34,18 @@ getSt = State $ \state -> (state, state)
 putSt :: state -> State state ()
 putSt state = State $ \_ -> ((), state)
 
-spec :: Spec
-spec = do
-  describe "StateMonad: example of a state monad" $ do
-      it "Applies state transformer on separate value and state" $ do
-        (runState (return value) state) == (value, state)
-      it "Gets a State, changes the state, calculates a result" $ do
-        runState stateFromDoBlock state == ("result", 2)
-  where
-    value = "value"
-    state = 1
-    calculateResultAndInjectInStateMonad = \value -> return("result")
-    stateFromDoBlock = do
-        getSt
-        putSt 2
-        calculateResultAndInjectInStateMonad "value"
+-- t transactional state, s committed state
+getTs :: State (s, t) t
+getTs = State $ \(s, t) -> (t, (s,t))
+
+putTs :: x -> State (s, x) ()
+putTs x = State $ \(s, t) -> ((), (s, x))
+
+buildTs :: s -> (s,s)
+buildTs s = (s,s)
+
+commitTs :: State (t, t) ()
+commitTs = State $ \(s, t) -> ((), (t, t))
+
+rollbackTs :: State (s, s) ()
+rollbackTs = State $ \(s, t) -> ((), (s, s))
