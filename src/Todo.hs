@@ -1,7 +1,9 @@
 module Todo (
-    validate
-  , createList
-  , collect
+  --   validate
+  -- , collect
+  -- , 
+  addTodo
+  , emptyCollection
   , complete
   , apply
   , isComplete
@@ -22,19 +24,15 @@ data Status = Complete | Active deriving (Show, Eq)
 
 data TodoError = InvalidDescriptionError deriving (Show, Eq)
 
--- utils
+addTodo :: TodoItem -> [TodoItem] -> [Either TodoError TodoItem]
+addTodo item list = fmap validate (item : list)
+                    where 
+                      validate item = if all isSpace (description item) then
+                        Left InvalidDescriptionError
+                      else 
+                        Right item
 
-validate :: TodoItem -> Either TodoError TodoItem
-validate (Todo description status) = if all isSpace description then Left InvalidDescriptionError else Right (Todo description status)
-
-createList :: TodoItem -> [TodoItem]
-createList = collect []
-
-collect :: [TodoItem] -> TodoItem -> [TodoItem]
-collect list item = case validate item of
-                        Left _ -> list
-                        Right item -> mappend list [item]
--- Either returns only first error TODO: https://hackage.haskell.org/package/validation
+emptyCollection = []
 
 complete :: TodoItem -> TodoItem
 complete (Todo description status) = Todo description Complete
