@@ -22,16 +22,12 @@ data Status = Complete | Active deriving (Show, Eq)
 data TodoError = InvalidDescriptionError | InvalidStatusError deriving (Show, Eq)
 
 addTodo :: TodoItem -> [TodoItem] -> [Either TodoError TodoItem]
-addTodo item list = fmap validate (item : list)
+addTodo item list = fmap validate (item:list)
                     where 
-                      validate item = 
-                        if all isSpace (description item) then
-                          Left InvalidDescriptionError
-                        else 
-                          if state item == Complete then
-                            Left InvalidStatusError
-                          else
-                            Right item
+                    validate item                         
+                      | all isSpace (description item) = Left InvalidDescriptionError
+                      | state item == Complete = Left InvalidStatusError
+                      | otherwise = Right item                    
 
 emptyCollection :: [TodoItem]
 emptyCollection = []
