@@ -13,6 +13,8 @@ spec = do
        addTodo todoEmptyDescription emptyCollection `shouldBe` [Left InvalidDescriptionError]
     it "should fail when adding an item with completed status" $ do
        addTodo todoComplete emptyCollection `shouldBe` [Left InvalidStatusError]
+    it "should fail returning multiple errors" $ do
+       addTodo (Todo " " Complete) emptyCollection `shouldBe` [Left InvalidStatusError, Left InvalidDescriptionError]
     it "should add todo to list when valid" $ do
        (addTodo todoActive emptyCollection) `shouldBe` [Right todoActive]
     it "given a todo then mark it as complete" $ do
