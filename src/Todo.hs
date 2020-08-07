@@ -13,8 +13,13 @@ module Todo (
 
 import Data.Char (isSpace)
 
+data TodoItem = Todo {
+  description :: String,
+  state :: Status 
+} deriving (Show, Eq) 
+
 data Status = Complete | Active deriving (Show, Eq)
-data TodoItem = Todo String Status deriving (Show, Eq) -- TODO: adding a field requires refactoring. how to fix it?
+
 data TodoError = InvalidDescriptionError deriving (Show, Eq)
 
 -- utils
