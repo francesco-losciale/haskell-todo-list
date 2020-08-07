@@ -73,4 +73,4 @@ Run:
         Prelude> fmap (+1) [1, 2, 3]
         [2,3,4]
     ``` 
-    In both cases, the function/behaviour lifted is the same. In the first case. It’s the context we’ve lifted the function into that determines how the function will behave on the data. The datatype and the Functor instance will determine the Context. Further,ideally it's the context the only place where is determined how error/exceptions are handled.
+    In both cases, the function/behaviour lifted is the same. In the first case. It’s the context we’ve lifted the function over that determines how the function behaves with the data. The datatype and the Functor instance determine the Context. Further, ideally the context is also the only place where exception handling is sitting.
