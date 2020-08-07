@@ -28,6 +28,9 @@ What I learned so far:
 Pre-requisites:
 
 - To build, you need `libpq-dev` that can be installed with `brew install postgresql` (<-- can you improve this???)
+
+Run:
+
 - To run tests, you need Docker Machine
 
 
