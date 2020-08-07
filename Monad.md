@@ -1,6 +1,6 @@
 # Monad definition 
 
-Notes collected watching [Bartosz Milewski](https://www.youtube.com/watch?v=gHiyzctYqZ0) lecture about Monad.
+Notes collected watching [Bartosz Milewski's lecture](https://www.youtube.com/watch?v=gHiyzctYqZ0) about Monad.
 
 ## Problem
 
