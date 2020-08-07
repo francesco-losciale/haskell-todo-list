@@ -61,7 +61,7 @@ Run:
 - To learn Haskell is better to have multiple sources & iterate more on the same topics. It takes time to absorb concepts. Pairing with a more experienced haskeller would be great, but you would need to write down notes to come back later on your own.
 - FP programmers tend to abstract more than OO - see https://www.sitepoint.com/oop-learn-about-abstraction-from-fp/
 - Monad formal definition available [here](./Monad.md)
-- The type system and the nature of functions suggest that testing would be much easier compared to OO necessary machinery (mocking)
+- The type system and the nature of functions seems to make FP code quicker to be tested compared to OO & necessary machinery it implies (mocking)
 - When using algebras in Haskell, you must prove properties such as associativity and distributivity by yourself.
 - Data types can change easily? Do we need to much up front data modeling? 
 - How flexible/agile is Haskell code? If functions are extremely small, we can take advantage on composition. We could prefer function replacement to refactoring. We would only increment code to change behaviour?
