@@ -1,4 +1,10 @@
-module State.SimpleState where
+module State.SimpleState (
+        SimpleState
+      , returnSt
+      , bindSt
+      , getSt
+      , putSt
+ ) where
 
 -- aka state transformer
 type SimpleState state result = state -> (result, state)

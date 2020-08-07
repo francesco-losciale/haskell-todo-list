@@ -1,13 +1,13 @@
 # Haskell Todo List - work in progress
 
-Side project to test Haskell learnings
+Side project to test Haskell learnings.
 
 As part of this project, the following significant problems have been solved: 
 
-- To learn Monads, the State monad has been rewritten from scratch:
+- To learn Monads, the State monad has been rewritten from scratch following these steps:
 
     1. Firstly, implemented an alias of a state transformer function - see `State.SimpleState`.
-    2. Secondly, replaced the alias with a constructor and added the accessor function to apply the state transformer out of the monad - see `State.State`.
+    2. Secondly, replaced the alias with a constructor and added the accessor function to apply the state transformer out of the monad - see `State.State`. Only `runState` needs to be exported now.
     3. Finally, created the Monad instance for State, reusing the bind and the return functions. This State monad can be used in a do block - see `State`.StateMonad`
     4. Also, implemented a state monad with a transactional state inside - `see TransactionalStateMonad`.
 

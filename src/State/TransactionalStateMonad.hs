@@ -1,4 +1,11 @@
-module State.TransactionalStateMonad where
+module State.TransactionalStateMonad  (
+       runState
+     , getTs
+     , putTs
+     , buildTs
+     , commitTs
+     , rollbackTs
+) where
 
 
 -- Haskell record type that wraps the state transformer.
@@ -27,12 +34,6 @@ instance Monad (State state) where
     (>>=) transformerWrapper calculateResultAndInjectInStateMonad =  State $
             \state -> let (result, newState) = runState transformerWrapper state
                       in runState (calculateResultAndInjectInStateMonad result) newState
-
-getSt :: State state state
-getSt = State $ \state -> (state, state)
-
-putSt :: state -> State state ()
-putSt state = State $ \_ -> ((), state)
 
 -- t transactional state, s committed state
 getTs :: State (s, t) t

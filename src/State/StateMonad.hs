@@ -1,4 +1,8 @@
-module State.StateMonad where
+module State.StateMonad (
+       runState
+     , getSt
+     , putSt
+) where
 
 -- Haskell record type that wraps the state transformer.
 -- The type of `runState` is :

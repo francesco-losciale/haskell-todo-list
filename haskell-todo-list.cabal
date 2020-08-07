@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: cd0162e42415d5bff1894c9ca9037b46b4beeb5effd45fca304ccc49fed16baf
+-- hash: b50830fd441536482cca41666aa46d79bc2882e7bd0a5257ba63faedf610e642
 
 name:           haskell-todo-list
 version:        0.1.0.0
@@ -40,6 +40,7 @@ library
   build-depends:
       aeson
     , base >=4.7 && <5
+    , happstack-lite
     , happstack-server
     , hspec
     , hspec-discover
@@ -66,6 +67,7 @@ executable haskell-todo-list-exe
   build-depends:
       aeson
     , base >=4.7 && <5
+    , happstack-lite
     , happstack-server
     , haskell-todo-list
     , hspec
@@ -89,6 +91,7 @@ test-suite haskell-todo-list-integration-test
   build-depends:
       aeson
     , base >=4.7 && <5
+    , happstack-lite
     , happstack-server
     , haskell-todo-list
     , hspec
@@ -115,6 +118,7 @@ test-suite haskell-todo-list-unit-test
   build-depends:
       aeson
     , base >=4.7 && <5
+    , happstack-lite
     , happstack-server
     , haskell-todo-list
     , hspec
