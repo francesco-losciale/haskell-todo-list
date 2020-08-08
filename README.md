@@ -48,9 +48,10 @@ Run:
 
 # TODOs & Open points
 
-- Review/refactor current unit tests
 - Refactoring & Improvements of Todo code
-- How to provide specific error types to the user? Learn Either
+    - ~~todo item validation can fail for more than one errors~~
+    - when there's at least one error at validation, throw an exception
+    - the excepton should provide all the necessary information to the client
 - Learn Lens - watch talk from Pawel Szulc on Lenses - https://vimeo.com/user119686798
 - Use `Data.Cache` to temporarily save list without peristing it - https://hackage.haskell.org/package/cache-0.1.3.0/docs/Data-Cache.html
 - Can you see any use case for STM? Katas?
