@@ -9,14 +9,16 @@ spec = do
   describe "Todo List" $ do
     it "should create a todo item" $ do
        (Todo "something" Active) `shouldBe` (Todo "something" Active)
-    it "should fail when adding an item with empty description" $ do
-       addTodo todoEmptyDescription emptyCollection `shouldBe` [Left InvalidDescriptionError]
-    it "should fail when adding an item with completed status" $ do
-       addTodo todoComplete emptyCollection `shouldBe` [Left InvalidStatusError]
-    it "should fail returning multiple errors" $ do
-       addTodo (Todo " " Complete) emptyCollection `shouldBe` [Left InvalidStatusError, Left InvalidDescriptionError]
-    it "should add todo to list when valid" $ do
-       (addTodo todoActive emptyCollection) `shouldBe` [Right todoActive]
+    it "should fail validation of an item with empty description" $ do
+       errorsFor todoEmptyDescription `shouldBe` [InvalidDescriptionError]
+    it "should fail validation of an item with completed status" $ do
+       errorsFor todoComplete `shouldBe` [InvalidStatusError]
+    it "should fail validation with multiple errors" $ do
+       errorsFor (Todo " " Complete) `shouldMatchList` [InvalidStatusError, InvalidDescriptionError]
+    it "should add todo to list when no errors" $ do
+       (add todoActive []) `shouldBe` [todoActive]
+    it "should not add todo to list when errors" $ do
+       (add todoComplete []) `shouldBe` []       
     it "given a todo then mark it as complete" $ do
        (Todo "something" Complete) `shouldBe` (complete (Todo "something" Active))
     it "given a todo list then mark a specific one as complete" $ do
