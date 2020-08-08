@@ -59,7 +59,7 @@ Run:
 
 # Thoughts & takes
 
-- To learn Haskell is better to have multiple sources & iterate more on the same topics. It takes time to absorb concepts. Pairing with a more experienced haskeller would be great, but you would need to write down notes to come back later on your own.
+- To learn Haskell is better to have multiple sources & iterate more on the same topics. It takes time to absorb concepts. Pairing with a more experienced haskeller would be great to learn idioms that are not available on books, but on certain things you would need to write down notes to come back later on your own without time constraints.
 - FP programmers tend to abstract more than OO - see https://www.sitepoint.com/oop-learn-about-abstraction-from-fp/
 - The type system and the nature of functions seems to make FP code quicker to be tested compared to OO & necessary machinery it implies (mocking)
 - When using algebras in Haskell, you must prove properties such as associativity and distributivity by yourself.
