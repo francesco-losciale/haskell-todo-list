@@ -22,9 +22,9 @@ data Status = Complete | Active deriving (Show, Eq)
 data TodoError = InvalidDescriptionError | InvalidStatusError deriving (Show, Eq)
 
 errorsFor :: TodoItem -> [TodoError]
-errorsFor item = mapMaybe checkDescription [item] ++
-             mapMaybe checkState [item] 
+errorsFor item = mapMaybe ($ item) checkList
              where
+               checkList = [checkDescription, checkState]
                checkDescription item 
                 | all isSpace (description item) = Just InvalidDescriptionError
                 | otherwise = Nothing
