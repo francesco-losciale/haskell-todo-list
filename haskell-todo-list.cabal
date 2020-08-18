@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b50830fd441536482cca41666aa46d79bc2882e7bd0a5257ba63faedf610e642
+-- hash: 07aad3bee6b7e460ccff1ab3cbe83984d3fb3c63a65f16ab2fcc291967cd329e
 
 name:           haskell-todo-list
 version:        0.1.0.0
@@ -32,6 +32,7 @@ library
       State.State
       State.StateMonad
       State.TransactionalStateMonad
+      Temp
       Todo
   other-modules:
       Paths_haskell_todo_list
@@ -40,6 +41,7 @@ library
   build-depends:
       aeson
     , base >=4.7 && <5
+    , containers
     , happstack-lite
     , happstack-server
     , hspec
@@ -59,6 +61,7 @@ executable haskell-todo-list-exe
       State.State
       State.StateMonad
       State.TransactionalStateMonad
+      Temp
       Todo
       Paths_haskell_todo_list
   hs-source-dirs:
@@ -67,6 +70,7 @@ executable haskell-todo-list-exe
   build-depends:
       aeson
     , base >=4.7 && <5
+    , containers
     , happstack-lite
     , happstack-server
     , haskell-todo-list
@@ -91,6 +95,7 @@ test-suite haskell-todo-list-integration-test
   build-depends:
       aeson
     , base >=4.7 && <5
+    , containers
     , happstack-lite
     , happstack-server
     , haskell-todo-list
@@ -118,6 +123,7 @@ test-suite haskell-todo-list-unit-test
   build-depends:
       aeson
     , base >=4.7 && <5
+    , containers
     , happstack-lite
     , happstack-server
     , haskell-todo-list

@@ -29,6 +29,7 @@ dependencies:
 - lens
 - utf8-string
 - aeson
+- containers
 
 library:
   source-dirs: src/
