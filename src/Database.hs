@@ -5,7 +5,7 @@ module Database (
   , deleteAllTodos
 ) where
 
-import Todo
+import Todo.Todo
 import Data.Int
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.FromRow

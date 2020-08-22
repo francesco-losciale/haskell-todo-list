@@ -1,8 +1,8 @@
-module TodoSpec where
+module Todo.TodoSpec where
 
 import Test.Hspec
 
-import Todo
+import Todo.Todo
 
 spec :: Spec
 spec = do

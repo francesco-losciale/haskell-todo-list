@@ -1,6 +1,6 @@
 module DatabaseSpec where
 
-import Todo
+import Todo.Todo
 import Database
 import Test.Hspec
 

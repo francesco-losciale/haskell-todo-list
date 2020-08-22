@@ -3,7 +3,7 @@
 {-# LANGUAGE ExtendedDefaultRules #-}
 module ServerSpec where
 
-import Todo
+import Todo.Todo
 import Test.Hspec
 
 import Happstack.Lite as Server

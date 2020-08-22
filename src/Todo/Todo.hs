@@ -1,4 +1,4 @@
-module Todo (
+module Todo.Todo (
   add
   , errorsFor
   , complete
