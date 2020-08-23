@@ -50,6 +50,7 @@ Run:
 
 - Refactoring & Improvements of Todo code
     - ~~todo item validation can fail for more than one errors~~
+    - compare the two solutions, add inline comments
     - when there's at least one error at validation, you don't throw an exception (that is more system-related instead of domain code). Produce an Either list with errors instead and let the consumer of Todo deal with it.
     - the excepton should provide all the necessary information to the client
 - Learn Lens - watch talk from Pawel Szulc on Lenses - https://vimeo.com/user119686798

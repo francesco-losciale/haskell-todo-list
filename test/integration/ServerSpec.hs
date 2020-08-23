@@ -1,9 +1,8 @@
-{-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ExtendedDefaultRules #-}
 module ServerSpec where
 
-import Todo.Todo
+import Todo.TodoValidation 
+
 import Test.Hspec
 
 import Happstack.Lite as Server
@@ -12,16 +11,10 @@ import Data.ByteString.Lazy.UTF8 as ByteString
 import Control.Lens
 import Control.Concurrent
 
-import Data.Aeson as A
-import Data.Data
-import Data.Maybe
-import Happstack.Server.Types
-import Control.Monad.IO.Class (liftIO)
-
 anApp :: ServerPart Server.Response
 anApp = msum
   [
-    Server.dir "hello" $ return (toResponse "hello"),
+    Server.dir "health" $ return (toResponse "hello"),
     Server.dir "get-empty-json" $ return (toResponse "{}"),
     Server.dir "get-unit" $ return (toResponse "{\"x\":1,\"y\":2}")
   ]
@@ -30,7 +23,7 @@ spec :: Spec
 spec = beforeAll (setUp) $ do
   describe "Web Server" $ do
     it "should contact server" $ do
-        response <- Client.get "http://localhost:8000/hello"
+        response <- Client.get "http://localhost:8000/health"
         ByteString.toString(response ^. responseBody) `shouldBe` "hello"
     it "should get empty json from server" $ do
         response <- Client.get "http://localhost:8000/get-empty-json"
