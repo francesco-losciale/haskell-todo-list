@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3343a095b556df20b79a2476ff6f15981f9929a52e378e679e454343e3013e24
+-- hash: 46ec730a2c392f5073976ca65600ab66c9b59cd4a6e9e8224d6bdda5dc3adb4c
 
 name:           haskell-todo-list
 version:        0.1.0.0
@@ -101,6 +101,7 @@ test-suite haskell-todo-list-integration-test
     , haskell-todo-list
     , hspec
     , hspec-discover
+    , http-types
     , lens
     , postgresql-simple
     , utf8-string
