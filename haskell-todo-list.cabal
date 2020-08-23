@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c8e571b4f0e3a05697450e4d0783222573381ed6f0ac429a7a534795f9787409
+-- hash: 3343a095b556df20b79a2476ff6f15981f9929a52e378e679e454343e3013e24
 
 name:           haskell-todo-list
 version:        0.1.0.0
@@ -111,6 +111,7 @@ test-suite haskell-todo-list-unit-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      JsonSerializerSpec
       State.SimpleStateSpec
       State.StateMonadSpec
       State.StateSpec

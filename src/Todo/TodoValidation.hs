@@ -1,4 +1,8 @@
+{-# LANGUAGE DeriveGeneric #-}
 module Todo.TodoValidation where
+
+import GHC.Generics -- used by Aeson
+import Data.Aeson as AS
 
 import Data.Char (isSpace)
 import qualified Data.List.NonEmpty as NE
@@ -10,10 +14,22 @@ import qualified Data.Sequence as S
 data TodoItem = Todo {
   description :: String,
   state :: Status 
-} deriving (Show, Eq) 
+} deriving (Show, Eq, Generic) 
 
-data Status = Complete | Active deriving (Show, Eq)
-data TodoError = InvalidDescriptionError | InvalidStatusError deriving (Show, Eq)
+data Status = Complete 
+            | Active 
+            deriving (Show, Eq, Generic)
+            
+data TodoError = InvalidDescriptionError 
+               | InvalidStatusError 
+               deriving (Show, Eq, Generic)
+
+instance FromJSON Status
+instance ToJSON Status
+instance FromJSON TodoItem
+instance ToJSON TodoItem
+instance FromJSON TodoError
+instance ToJSON TodoError
 
 type TodoValidation = TodoItem -> Maybe TodoError
 
