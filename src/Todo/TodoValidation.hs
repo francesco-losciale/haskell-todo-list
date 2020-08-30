@@ -9,7 +9,9 @@ import qualified Data.List.NonEmpty as NE
 import Data.Maybe (mapMaybe)
 import qualified Data.Sequence as S
 
--- Similar module to Todo, with more idiomatic haskell
+-- This module is replaces Todo module with some more idiomatic code. 
+
+-- please compare the inline comments with the ones in `Todo`
 
 data TodoItem = Todo {
   description :: String,
@@ -42,6 +44,12 @@ whenValid validations item = whenValid'
      [] -> {- Valid -} Right $ f item
      (herr:terrs) -> {- Invalid -} Left $ herr NE.:| terrs
 
+-- it makes clear that the item can be added to the list only if
+-- the validation passes. 
+-- 1. the user has to pass the validation functions necessarily.
+-- 2. Either is a pattern that makes clear what can happen calling the function
+-- 3. it uses NonEmpty to make it clear in the domain this invariant:
+--    `the list of errors can never be empty`
 addValidatedTodo :: [TodoValidation] -> TodoItem -> [TodoItem] -> Either (NE.NonEmpty TodoError) [TodoItem]
 addValidatedTodo validations item = addValidatedTodo'
  where
