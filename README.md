@@ -50,10 +50,8 @@ Run:
 
 - Refactoring & Improvements of Todo code
     - ~~todo item validation can fail for more than one errors~~
-    - compare the two solutions, add inline comments
-    - when there's at least one error at validation, you don't throw an exception (that is more system-related instead of domain code). Produce an Either list with errors instead and let the consumer of Todo deal with it.
-    - the excepton should provide all the necessary information to the client
-- Learn Lens - watch talk from Pawel Szulc on Lenses - https://vimeo.com/user119686798
+    - ~~compare the two solutions, add inline comments~~
+- Learn Lens https://hackage.haskell.org/package/lens-tutorial-1.0.4/docs/Control-Lens-Tutorial.html - watch talk from Pawel Szulc on Lenses - https://vimeo.com/user119686798
 - Use `Data.Cache` to temporarily save list without peristing it - https://hackage.haskell.org/package/cache-0.1.3.0/docs/Data-Cache.html
 - Exercises: Haskell patterns minibook: https://kowainik.github.io/posts/haskell-mini-patterns <-- to learn idiomatic code
 - Can you see any use case for STM? Katas?
