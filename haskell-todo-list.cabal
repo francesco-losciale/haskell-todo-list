@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 46ec730a2c392f5073976ca65600ab66c9b59cd4a6e9e8224d6bdda5dc3adb4c
+-- hash: 0d24c7912ccae723a18d5428a7606288e1308b7a5831e81fd4421dfa8cf7f86b
 
 name:           haskell-todo-list
 version:        0.1.0.0
@@ -86,6 +86,7 @@ test-suite haskell-todo-list-integration-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      ControllerSpec
       DatabaseSpec
       ServerSpec
       Paths_haskell_todo_list
