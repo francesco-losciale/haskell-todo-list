@@ -11,7 +11,8 @@ import Happstack.Server (askRq, dir, method, decodeBody,
     defaultBodyPolicy, takeRequestBody, toResponse, ok, unBody, resp,
     Method(GET, POST), ServerPart, Response)
 
-import Todo.TodoValidation
+import Database (extractAllTodos)
+import Todo.TodoValidation (defaultValidations, addValidatedTodo, TodoItem(..), Status(..))
 
 -- https://stackoverflow.com/questions/8865793/how-to-create-json-rest-api-with-happstack-json-body
 getBody :: ServerPart ByteString
@@ -31,6 +32,8 @@ handlers = do
                 dir "todos" $ do method POST
                                  body <- getBody
                                  let todo = fromJust $ decode body :: TodoItem
+                                 return extractAllTodos
+                                 let newList = addValidatedTodo defaultValidations todo list 
                                  resp 201 $ toResponse (encode todo), 
                 dir "todos" $ do method GET 
                                  ok (toResponse $ encode [(Todo "example" Active)])                                 

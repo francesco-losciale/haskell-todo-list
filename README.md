@@ -50,6 +50,7 @@ Run:
 - Rearrange links:
     https://hackage.haskell.org/package/wreq-0.5.3.2/docs/Network-Wreq.html
     Crash course on Happstack - http://happstack.com/docs/crashcourse/index.html
+    https://stackoverflow.com/questions/35592415/multiple-monads-in-one-do-block
 - Refactoring & Improvements of Todo code
     - ~~todo item validation can fail for more than one errors~~
     - ~~compare the two solutions, add inline comments~~
@@ -68,6 +69,9 @@ Run:
 - The type system and the nature of functions seems to make FP code quicker to be tested compared to OO & necessary machinery it implies (mocking)
 - When using algebras in Haskell, you must prove properties such as associativity and distributivity by yourself.
 - Data types can change easily? Do we need to much up front data modeling? 
+- Initially I thought ControllerSpec such as unit test of webserver, 
+but after having completed it I tought to move database tests in there
+and make it an integration test. It makes more sense to test "controllers" and "database" as part of an integration test.
 - How flexible/agile is Haskell code? If functions are extremely small, we can take advantage on composition. We could prefer function replacement to refactoring. We would only increment code to change behaviour?
 - Continuous deployment/hotswapping: easier with FP - see http://simonmar.github.io/posts/2017-10-17-hotswapping-haskell.html 
 - DDD-related: lifting a function over the Maybe context:

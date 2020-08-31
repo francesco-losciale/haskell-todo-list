@@ -17,6 +17,7 @@ import Network.Wreq (defaults, header, get, getWith, post, responseBody, respons
 import Test.Hspec 
 
 import Controller
+import Database
 import Todo.TodoValidation
 
 main :: IO ()
@@ -41,5 +42,6 @@ spec = beforeAll (setUp) $ do
 
   where
     todoItem = (Todo "example" Active)
-    setUp = do forkIO main
+    setUp = do deleteAllTodos
+               forkIO main
                return () 
