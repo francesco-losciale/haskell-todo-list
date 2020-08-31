@@ -4,18 +4,20 @@ module ControllerSpec where
 
 import Control.Concurrent (forkIO)
 import Control.Lens 
+import Control.Monad (msum)
 import Control.Monad.IO.Class (liftIO)
 import Data.Aeson (encode, decode, toJSON)
 import Data.ByteString.Lazy.UTF8 (toString, ByteString)
 import Data.Maybe (fromJust)
-import Happstack.Server (simpleHTTP, nullConf)
+import Happstack.Server (dir, method, decodeBody, simpleHTTP, nullConf,
+    defaultBodyPolicy, toResponse, ok, resp,
+    Method(GET, POST), ServerPart, Response)
 import Network.HTTP.Types.Status (ok200, created201)
 import Network.Wreq (defaults, header, get, getWith, post, responseBody, responseStatus)
 import Test.Hspec 
 
 import Controller
 import Todo.TodoValidation
-
 
 main :: IO ()
 main = simpleHTTP nullConf $ handlers

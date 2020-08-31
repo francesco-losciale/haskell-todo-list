@@ -9,7 +9,7 @@ import Data.ByteString.Lazy.UTF8 (toString, ByteString)
 import Data.Maybe (fromJust)
 import Happstack.Server (askRq, dir, method, decodeBody, 
     defaultBodyPolicy, takeRequestBody, toResponse, ok, unBody, resp,
-    Method(GET, POST), ServerPart, Response, FilterMonad)
+    Method(GET, POST), ServerPart, Response)
 
 import Todo.TodoValidation
 
