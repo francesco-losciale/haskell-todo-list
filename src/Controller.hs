@@ -15,6 +15,7 @@ import Database (extractAllTodos)
 import Todo.TodoValidation (defaultValidations, addValidatedTodo, TodoItem(..), Status(..))
 
 -- https://stackoverflow.com/questions/8865793/how-to-create-json-rest-api-with-happstack-json-body
+-- https://stackoverflow.com/questions/35592415/multiple-monads-in-one-do-block
 getBody :: ServerPart ByteString
 getBody = do
     req  <- askRq 
@@ -32,8 +33,7 @@ handlers = do
                 dir "todos" $ do method POST
                                  body <- getBody
                                  let todo = fromJust $ decode body :: TodoItem
-                                 let newList = addValidatedTodo defaultValidations todo  
-                                 return extractAllTodos
+                                 list <- extractAllTodos
                                  resp 201 $ toResponse (encode todo), 
                 dir "todos" $ do method GET 
                                  ok (toResponse $ encode [(Todo "example" Active)])                                 
