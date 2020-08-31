@@ -1,4 +1,9 @@
 module Main where
 
+import Happstack.Server (simpleHTTP, nullConf)
+
+import Controller
+
 main :: IO ()
-main = undefined
+main = simpleHTTP nullConf $ handlers
+

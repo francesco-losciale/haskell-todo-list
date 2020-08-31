@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 906f7be13d5d71a634a0e15041d237cd586223eec3215e0056f8698c3adfa0e4
+-- hash: d9fc52e43ddc891e9fd6ace58eeee911a017fdbd9cf1400ac93c51f060c0834f
 
 name:           haskell-todo-list
 version:        0.1.0.0
@@ -25,6 +25,7 @@ source-repository head
 
 library
   exposed-modules:
+      Controller
       Database
       Main
       Server
@@ -56,6 +57,7 @@ library
 executable haskell-todo-list-exe
   main-is: Main.hs
   other-modules:
+      Controller
       Database
       Server
       State.SimpleState
