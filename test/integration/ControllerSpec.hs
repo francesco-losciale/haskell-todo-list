@@ -12,7 +12,7 @@ import Data.Maybe (fromJust)
 import Happstack.Server (askRq, dir, method, simpleHTTP, nullConf, decodeBody, 
     defaultBodyPolicy, takeRequestBody, toResponse, ok, unBody, 
     Method(GET,POST), ServerPart, Response)
-import Network.Wreq (get, post, responseBody, responseStatus)
+import Network.Wreq (defaults, header, get, getWith, post, responseBody, responseStatus)
 import Network.HTTP.Types.Status (ok200)
 import Test.Hspec 
 
@@ -39,7 +39,9 @@ handlers = do
             msum [
                 dir "health" $ do method GET 
                                   ok (toResponse "hello"),
-                postTodoItemHandler                                  
+                dir "todos" $ postTodoItemHandler ,
+                dir "todos" $ do method GET 
+                                 ok (toResponse $ encode [(Todo "example" Active)])                                 
              ]
 
 main :: IO ()
@@ -50,11 +52,16 @@ spec = beforeAll (setUp) $ do
   describe "Controller" $ do
     it "should be healthy" $ do
         response <- get "http://localhost:8000/health"
-        toString(response ^. responseBody) `shouldBe` "hello"
         response ^. responseStatus `shouldBe` ok200
+        toString(response ^. responseBody) `shouldBe` "hello"
     it "should POST todo item" $ do
         response <- post "http://localhost:8000/todos" (toJSON todoItem)
-        toString(response ^. responseBody) `shouldBe` "{\"state\":\"Active\",\"description\":\"example\"}"      
+        toString(response ^. responseBody) `shouldBe` "{\"state\":\"Active\",\"description\":\"example\"}"
+    it "should GET todo items" $ do
+        let opts = defaults & header "Content-Type" .~ ["application/json"]
+        response <- getWith opts "http://localhost:8000/todos"
+        response ^. responseStatus `shouldBe` ok200
+        (fromJust $ decode (response ^. responseBody)) `shouldBe` [todoItem]
 
   where
     todoItem = (Todo "example" Active)
