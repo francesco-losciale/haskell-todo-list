@@ -10,10 +10,10 @@ import Data.Aeson (encode, decode, toJSON)
 import Data.ByteString.Lazy.UTF8 (toString, ByteString)
 import Data.Maybe (fromJust)
 import Happstack.Server (askRq, dir, method, simpleHTTP, nullConf, decodeBody, 
-    defaultBodyPolicy, takeRequestBody, toResponse, ok, unBody, 
-    Method(GET,POST), ServerPart, Response)
+    defaultBodyPolicy, takeRequestBody, toResponse, ok, unBody, resp,
+    Method(GET,POST), ServerPart, Response, FilterMonad)
 import Network.Wreq (defaults, header, get, getWith, post, responseBody, responseStatus)
-import Network.HTTP.Types.Status (ok200)
+import Network.HTTP.Types.Status (ok200, created201)
 import Test.Hspec 
 
 import Todo.TodoValidation
@@ -36,7 +36,7 @@ handlers = do
                 dir "todos" $ do method POST
                                  body <- getBody
                                  let todo = fromJust $ decode body :: TodoItem
-                                 ok $ toResponse $ encode todo,
+                                 resp 201 $ toResponse (encode todo), 
                 dir "todos" $ do method GET 
                                  ok (toResponse $ encode [(Todo "example" Active)])                                 
              ]
@@ -53,6 +53,7 @@ spec = beforeAll (setUp) $ do
         toString(response ^. responseBody) `shouldBe` "hello"
     it "should POST todo item" $ do
         response <- post "http://localhost:8000/todos" (toJSON todoItem)
+        response ^. responseStatus `shouldBe` created201
         toString(response ^. responseBody) `shouldBe` "{\"state\":\"Active\",\"description\":\"example\"}"
     it "should GET todo items" $ do
         let opts = defaults & header "Content-Type" .~ ["application/json"]
