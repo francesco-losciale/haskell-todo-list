@@ -27,19 +27,16 @@ getBody = do
         Just rqbody -> return . unBody $ rqbody 
         Nothing     -> return "" 
 
-postTodoItemHandler :: ServerPart Response
-postTodoItemHandler =
-      do body <- getBody
-         let todo = fromJust $ decode body :: TodoItem
-         ok $ toResponse $ encode todo 
-
 handlers :: ServerPart Response
 handlers = do 
             decodeBody (defaultBodyPolicy "/tmp/" 0 1000 1000)
             msum [
                 dir "health" $ do method GET 
                                   ok (toResponse "hello"),
-                dir "todos" $ postTodoItemHandler ,
+                dir "todos" $ do method POST
+                                 body <- getBody
+                                 let todo = fromJust $ decode body :: TodoItem
+                                 ok $ toResponse $ encode todo,
                 dir "todos" $ do method GET 
                                  ok (toResponse $ encode [(Todo "example" Active)])                                 
              ]
