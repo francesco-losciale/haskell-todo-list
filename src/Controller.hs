@@ -32,8 +32,8 @@ handlers = do
                 dir "todos" $ do method POST
                                  body <- getBody
                                  let todo = fromJust $ decode body :: TodoItem
+                                 let newList = addValidatedTodo defaultValidations todo  
                                  return extractAllTodos
-                                 let newList = addValidatedTodo defaultValidations todo list 
                                  resp 201 $ toResponse (encode todo), 
                 dir "todos" $ do method GET 
                                  ok (toResponse $ encode [(Todo "example" Active)])                                 
