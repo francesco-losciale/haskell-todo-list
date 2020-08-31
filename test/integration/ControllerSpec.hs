@@ -5,7 +5,8 @@ import Control.Lens
 import Control.Monad (msum)
 import Data.ByteString.Lazy.UTF8 (toString)
 import Happstack.Server (dir, method, simpleHTTP, nullConf, decodeBody, defaultBodyPolicy, toResponse, ok, Method(GET,POST), ServerPart, Response)
-import Network.Wreq (get, responseBody)
+import Network.Wreq (get, responseBody, responseStatus)
+import Network.HTTP.Types.Status (ok200)
 import Test.Hspec 
 
 handlers :: ServerPart Response
@@ -24,7 +25,8 @@ spec = beforeAll (setUp) $ do
   describe "Controller" $ do
     it "should be healthy" $ do
         response <- get "http://localhost:8000/health"
-        toString(response ^. responseBody) `shouldBe` "hello" 
+        toString(response ^. responseBody) `shouldBe` "hello"
+        response ^. responseStatus `shouldBe` ok200
   where
     setUp = do forkIO main
                return () 

@@ -30,6 +30,7 @@ dependencies:
 - utf8-string
 - aeson
 - containers
+- http-types
 
 library:
   source-dirs: src/
