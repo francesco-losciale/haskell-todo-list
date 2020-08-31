@@ -47,7 +47,9 @@ Run:
 
 
 # TODOs & Open points
-
+- Rearrange links:
+    https://hackage.haskell.org/package/wreq-0.5.3.2/docs/Network-Wreq.html
+    Crash course on Happstack - http://happstack.com/docs/crashcourse/index.html
 - Refactoring & Improvements of Todo code
     - ~~todo item validation can fail for more than one errors~~
     - ~~compare the two solutions, add inline comments~~
