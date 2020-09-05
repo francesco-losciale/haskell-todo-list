@@ -4,6 +4,7 @@ module Controller where
 
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad (msum)
+import Control.Monad.Trans.Class (lift)
 import Data.Aeson (encode, decode, toJSON)
 import Data.ByteString.Lazy.UTF8 (toString, ByteString)
 import Data.Maybe (fromJust)
@@ -32,9 +33,14 @@ handlers = do
                                   ok (toResponse "success"),
                 dir "todos" $ do method POST
                                  body <- getBody
+                                 list <- lift extractAllTodos
                                  let todo = fromJust $ decode body :: TodoItem
-                                 list <- extractAllTodos
-                                 resp 201 $ toResponse (encode todo), 
+                                 case addValidatedTodo defaultValidations todo list of
+                                    Left err -> resp 400 $ toResponse (encode err)
+                                    Right list -> resp 201 $ toResponse (encode list),
                 dir "todos" $ do method GET 
                                  ok (toResponse $ encode [(Todo "example" Active)])                                 
              ]
+            where 
+                collectErrors errors = errors
+                newList items = items
