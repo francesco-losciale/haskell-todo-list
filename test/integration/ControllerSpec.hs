@@ -13,7 +13,7 @@ import Happstack.Server (simpleHTTP, nullConf,
     defaultBodyPolicy, toResponse, ok, resp,
     Method(GET, POST), ServerPart, Response)
 import Network.HTTP.Types.Status (ok200, created201, status400)
-import Network.Wreq (defaults, header, get, getWith, post, responseBody, responseStatus)
+import Network.Wreq (defaults, header, get, getWith, post, postWith, checkResponse, responseBody, responseStatus)
 import Test.Hspec 
 
 import Controller
@@ -35,7 +35,7 @@ spec = beforeAll (setUp) $ do
         response ^. responseStatus `shouldBe` created201
         toString(response ^. responseBody) `shouldBe` "[{\"state\":\"Active\",\"description\":\"example\"}]"
     it "should not POST invalid todo item" $ do
-        response <- post "http://localhost:8000/todos" (toJSON invalidTodoItem)
+        response <- postWith (set checkResponse (Just $ \_ _ -> return ()) defaults) "http://localhost:8000/todos" (toJSON invalidTodoItem)
         response ^. responseStatus `shouldBe` status400
         toString(response ^. responseBody) `shouldBe` "[\"InvalidDescriptionError\",\"InvalidStatusError\"]"
     it "should GET todo items" $ do
