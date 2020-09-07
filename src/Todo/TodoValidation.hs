@@ -2,7 +2,7 @@
 module Todo.TodoValidation where
 
 import GHC.Generics -- used by Aeson
-import Data.Aeson as AS
+import Data.Aeson as AS ( FromJSON, ToJSON )
 
 import Data.Char (isSpace)
 import qualified Data.List.NonEmpty as NE

@@ -1,19 +1,33 @@
 {-# LANGUAGE ExtendedDefaultRules #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DeriveGeneric #-}
+
 module Controller where
 
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad (msum)
 import Control.Monad.Trans.Class (lift)
-import Data.Aeson (encode, decode, toJSON)
+import Data.Aeson (encode, decode, toJSON, FromJSON, ToJSON)
 import Data.ByteString.Lazy.UTF8 (toString, ByteString)
 import Data.Maybe (fromJust)
+import Data.Map (singleton, insert)
+import GHC.Generics ( Generic )
 import Happstack.Server (askRq, dir, method, decodeBody, 
     defaultBodyPolicy, takeRequestBody, toResponse, ok, unBody, resp,
     Method(GET, POST), ServerPart, Response)
 
 import Database (extractAllTodos)
 import Todo.TodoValidation (defaultValidations, addValidatedTodo, TodoItem(..), Status(..))
+
+
+data CreatedItemPayload = Body
+  { newTodoId :: Int,
+    list :: [TodoItem]
+  }
+  deriving (Generic, Show)
+
+instance FromJSON CreatedItemPayload
+instance ToJSON CreatedItemPayload
 
 -- https://stackoverflow.com/questions/8865793/how-to-create-json-rest-api-with-happstack-json-body
 -- https://stackoverflow.com/questions/35592415/multiple-monads-in-one-do-block
@@ -37,7 +51,7 @@ handlers = do
                                  let todo = fromJust $ decode body :: TodoItem
                                  case addValidatedTodo defaultValidations todo list of
                                     Left err -> resp 400 $ toResponse (encode err)
-                                    Right list -> resp 201 $ toResponse (encode list),
+                                    Right list -> resp 201 $ toResponse (encode $ Body { newTodoId = 123, list = list}),
                 dir "todos" $ do method GET 
                                  ok (toResponse $ encode [(Todo "example" Active)])                                 
              ]

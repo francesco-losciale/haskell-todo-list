@@ -30,14 +30,14 @@ spec = beforeAll (setUp) $ do
         response <- get "http://localhost:8000/health"
         response ^. responseStatus `shouldBe` ok200
         toString(response ^. responseBody) `shouldBe` "success"
-    it "should POST todo item" $ do
-        response <- post "http://localhost:8000/todos" (toJSON todoItem)
-        response ^. responseStatus `shouldBe` created201
-        toString(response ^. responseBody) `shouldBe` "[{\"state\":\"Active\",\"description\":\"example\"}]"
     it "should not POST invalid todo item" $ do
         response <- postWith (set checkResponse (Just $ \_ _ -> return ()) defaults) "http://localhost:8000/todos" (toJSON invalidTodoItem)
         response ^. responseStatus `shouldBe` status400
         toString(response ^. responseBody) `shouldBe` "[\"InvalidDescriptionError\",\"InvalidStatusError\"]"
+    it "should POST todo item" $ do
+        response <- post "http://localhost:8000/todos" (toJSON todoItem)
+        response ^. responseStatus `shouldBe` created201
+        toString(response ^. responseBody) `shouldBe` "{\"list\":[{\"state\":\"Active\",\"description\":\"example\"}],\"newTodoId\":123}"
     it "should GET todo items" $ do
         let opts = defaults & header "Content-Type" .~ ["application/json"]
         response <- getWith opts "http://localhost:8000/todos"
