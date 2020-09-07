@@ -9,6 +9,7 @@ import Control.Monad (msum)
 import Control.Monad.Trans.Class (lift)
 import Data.Aeson (encode, decode, toJSON, FromJSON, ToJSON)
 import Data.ByteString.Lazy.UTF8 (toString, ByteString)
+import Data.List.NonEmpty 
 import Data.Maybe (fromJust)
 import Data.Map (singleton, insert)
 import GHC.Generics ( Generic )
@@ -17,10 +18,10 @@ import Happstack.Server (askRq, dir, method, decodeBody,
     Method(GET, POST), ServerPart, Response)
 
 import Database (extractAllTodos)
-import Todo.TodoValidation (defaultValidations, addValidatedTodo, TodoItem(..), Status(..))
+import Todo.TodoValidation (defaultValidations, addValidatedTodo, TodoItem(..), TodoError(..), Status(..))
 
 
-data CreatedItemPayload = Body
+data CreatedItemPayload = ResponsePayload
   { newTodoId :: Int,
     list :: [TodoItem]
   }
@@ -28,6 +29,15 @@ data CreatedItemPayload = Body
 
 instance FromJSON CreatedItemPayload
 instance ToJSON CreatedItemPayload
+
+data InvalidItemPayload = ErrorsPayload
+  { item :: TodoItem,
+    errors :: NonEmpty TodoError
+  }
+  deriving (Generic, Show)
+
+instance FromJSON InvalidItemPayload
+instance ToJSON InvalidItemPayload
 
 -- https://stackoverflow.com/questions/8865793/how-to-create-json-rest-api-with-happstack-json-body
 -- https://stackoverflow.com/questions/35592415/multiple-monads-in-one-do-block
@@ -50,8 +60,8 @@ handlers = do
                                  list <- lift extractAllTodos
                                  let todo = fromJust $ decode body :: TodoItem
                                  case addValidatedTodo defaultValidations todo list of
-                                    Left err -> resp 400 $ toResponse (encode err)
-                                    Right list -> resp 201 $ toResponse (encode $ Body { newTodoId = 123, list = list}),
+                                    Left err -> resp 400 $ toResponse (encode $ ErrorsPayload {item = todo, errors = err} )
+                                    Right list -> resp 201 $ toResponse (encode $ ResponsePayload { newTodoId = 123, list = list}),
                 dir "todos" $ do method GET 
                                  ok (toResponse $ encode [(Todo "example" Active)])                                 
              ]
