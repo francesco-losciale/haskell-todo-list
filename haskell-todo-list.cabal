@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 68ae597285510769c1de52b2949b60923d326b2ae8dd053b252c862a2da5c9a5
+-- hash: a39ecfe5077350a6473a24e6dcb97802dc89d394b145db12f16c398df183352b
 
 name:           haskell-todo-list
 version:        0.1.0.0
@@ -28,6 +28,7 @@ library
       Controller
       Database
       Main
+      NewTodo
       Server
       State.SimpleState
       State.State
@@ -60,6 +61,7 @@ executable haskell-todo-list-exe
   other-modules:
       Controller
       Database
+      NewTodo
       Server
       State.SimpleState
       State.State
@@ -94,6 +96,7 @@ test-suite haskell-todo-list-integration-test
   other-modules:
       ControllerSpec
       DatabaseSpec
+      NewTodoSpec
       Paths_haskell_todo_list
   hs-source-dirs:
       test/integration
