@@ -2,6 +2,7 @@
 module Database (
     extractAllTodos
   , writeAllTodos
+  , writeTodo
   , deleteAllTodos
 ) where
 
@@ -25,10 +26,10 @@ instance ToField Status where
     toField Active = toField ("Active" :: String)
 
 instance FromRow TodoItem where
-    fromRow = Todo <$> field <*> field
+    fromRow = Todo <$> field <*> field <*> field
 
 instance ToRow TodoItem where
-  toRow (Todo description status) = toRow (description, status)
+  toRow (Todo id description status) = toRow (id, description, status)
 
 createConnection :: IO Connection
 createConnection = connect defaultConnectInfo { connectHost = "localhost", connectPassword = "password" }
@@ -36,14 +37,21 @@ createConnection = connect defaultConnectInfo { connectHost = "localhost", conne
 extractAllTodos :: IO [TodoItem]
 extractAllTodos = do
                     conn <- createConnection
-                    query_ conn "select description, status from todo_list" :: IO [TodoItem]
+                    query_ conn "select id, description, status from todo_list" :: IO [TodoItem]
 
 writeAllTodos :: [TodoItem] -> IO Int64
 writeAllTodos todoList = do
                     conn <- createConnection
                     executeMany conn
-                      "insert into todo_list (description, status) values (?,?)"
+                      "insert into todo_list (description, status) values (?,?) returning id"
                       todoList
+
+writeTodo :: TodoItem -> IO Int64
+writeTodo todo = do
+                    conn <- createConnection
+                    let q = "insert into todo_list (description, status) values (?,?) returning id"
+                    [xs] <- query conn q todo
+                    return $ head xs
 
 deleteAllTodos :: IO Int64
 deleteAllTodos = do

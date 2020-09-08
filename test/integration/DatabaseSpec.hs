@@ -9,14 +9,14 @@ import Test.Hspec
 spec :: Spec
 spec = beforeAll (setUp) $ do
   describe "Postgres Database" $ do
-    it "should persist and read todo list" $ do
+    it "should persist a todo in list" $ do
        deleteAllTodos
-       rows <- writeAllTodos [todoActive, todoComplete]
+       id <- writeTodo todoActive
        todoList <- extractAllTodos
-       todoList `shouldBe` expectedTodoList
+       todoList `shouldBe` [todoActive]
   where
-    todoActive = Todo "todo marked as active" Active
-    todoComplete = Todo "todo marked as complete" Complete
+    todoActive = Todo 1 "todo marked as active" Active
+    todoComplete = Todo 2 "todo marked as complete" Complete
     expectedTodoList = [todoActive, todoComplete]
     setUp = do
               deleteAllTodos

@@ -10,6 +10,7 @@ CREATE SCHEMA schema_todo AUTHORIZATION postgres; -- create schema authorized fo
 ALTER ROLE postgres SET search_path TO schema_todo;
 
 CREATE TABLE schema_todo.todo_list (
-  description TEXT PRIMARY KEY,
+  id BIGSERIAL PRIMARY KEY,
+  description TEXT,
   status VARCHAR
 )

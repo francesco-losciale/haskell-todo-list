@@ -14,6 +14,7 @@ import qualified Data.Sequence as S
 -- please compare the inline comments with the ones in `Todo`
 
 data TodoItem = Todo {
+  id :: Int,
   description :: String,
   state :: Status 
 } deriving (Show, Eq, Generic) 
@@ -70,14 +71,14 @@ validateState item =
    _ -> Nothing
 
 complete :: TodoItem -> TodoItem
-complete (Todo description status) = Todo description Complete
+complete (Todo id description status) = Todo id description Complete
 
 apply :: (TodoItem -> TodoItem) -> TodoItem -> [TodoItem] -> [TodoItem]
 apply newStatus todo list = [if item == todo then newStatus item else item | item <- list]
 
 isComplete :: TodoItem -> Bool
-isComplete (Todo _ Complete) = True
-isComplete (Todo _ _) = False
+isComplete (Todo _ _ Complete) = True
+isComplete (Todo _ _ _) = False
 
 removeCompleted :: [TodoItem] -> [TodoItem]
 removeCompleted = filter (not . isComplete)   

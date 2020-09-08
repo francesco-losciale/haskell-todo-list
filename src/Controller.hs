@@ -63,7 +63,7 @@ handlers = do
                                     Left err -> resp 400 $ toResponse (encode $ ErrorsPayload {item = todo, errors = err} )
                                     Right list -> resp 201 $ toResponse (encode $ ResponsePayload { newTodoId = 123, list = list}),
                 dir "todos" $ do method GET 
-                                 ok (toResponse $ encode [(Todo "example" Active)])                                 
+                                 ok (toResponse $ encode [Todo { description ="example", state = Active }])                                 
              ]
             where 
                 collectErrors errors = errors
