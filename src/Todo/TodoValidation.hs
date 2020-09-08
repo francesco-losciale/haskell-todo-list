@@ -14,7 +14,7 @@ import qualified Data.Sequence as S
 -- please compare the inline comments with the ones in `Todo`
 
 data TodoItem = Todo {
-  id :: Int,
+  todo_id :: Int,
   description :: String,
   state :: Status 
 } deriving (Show, Eq, Generic) 

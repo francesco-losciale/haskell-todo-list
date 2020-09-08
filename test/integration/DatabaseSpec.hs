@@ -1,7 +1,6 @@
 module DatabaseSpec where
 
-import Todo.TodoValidation
-
+import Todo.TodoValidation 
 import Database
 import Test.Hspec
 
@@ -11,13 +10,11 @@ spec = beforeAll (setUp) $ do
   describe "Postgres Database" $ do
     it "should persist a todo in list" $ do
        deleteAllTodos
-       id <- writeTodo todoActive
-       todoList <- extractAllTodos
-       todoList `shouldBe` [todoActive]
+       id <- writeTodo $ wantToWrite todoActive
+       todoList <- extractList
+       [ description $ toTodoItem x | x <- todoList] `shouldBe` [description $ todoActive]
   where
-    todoActive = Todo 1 "todo marked as active" Active
-    todoComplete = Todo 2 "todo marked as complete" Complete
-    expectedTodoList = [todoActive, todoComplete]
+    todoActive = Todo {  description = "todo marked as active", state = Active }
     setUp = do
               deleteAllTodos
               return ()

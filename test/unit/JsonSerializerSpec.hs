@@ -19,5 +19,5 @@ spec =
     it "should encode TodoItem to json " $ do
         (AS.encode todoItemExample) `shouldBe` BS.fromString jsonString
   where
-    jsonString = "{\"state\":\"Active\",\"description\":\"test\"}"
-    todoItemExample = Todo {description = "test", state = Active}
+    jsonString = "{\"state\":\"Active\",\"todo_id\":1,\"description\":\"test\"}"
+    todoItemExample = Todo {todo_id = 1, description = "test", state = Active}

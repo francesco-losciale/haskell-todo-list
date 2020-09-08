@@ -45,8 +45,8 @@ spec = beforeAll (setUp) $ do
         (fromJust $ decode (response ^. responseBody)) `shouldBe` [todoItem]
 
   where
-    todoItem = Todo { description ="example", state = Active }
-    invalidTodoItem = Todo { description ="", state = Complete }
+    todoItem = Todo { todo_id=1,description ="example", state = Active }
+    invalidTodoItem = Todo { todo_id=1,description ="", state = Complete }
     setUp = do deleteAllTodos
                forkIO main
                return () 
