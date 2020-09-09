@@ -5,10 +5,23 @@ module NewTodo where
 
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad (msum)
-import Data.ByteString.Lazy.UTF8 (toString, ByteString)
+import Control.Monad.Trans.Class (lift)    
+import Database.PostgreSQL.Simple
+    ( FromRow,
+      ToRow,
+      query,
+      query_,
+      connect,
+      defaultConnectInfo,
+      execute_,
+      ConnectInfo(connectHost, connectPassword),
+      Connection )
+import Database.PostgreSQL.Simple.ToRow      
 import Data.Aeson (encode, decode, toJSON, FromJSON, ToJSON)
+import Data.ByteString.Lazy.UTF8 (toString, ByteString)
+import Data.Char (isSpace)
 import qualified Data.List.NonEmpty as N
-import Data.Maybe (fromJust)
+import Data.Maybe (fromJust, mapMaybe)
 import GHC.Generics ( Generic )
 import Happstack.Server (askRq, dir, method, decodeBody, 
     defaultBodyPolicy, takeRequestBody, toResponse, ok, unBody, resp,
@@ -19,19 +32,34 @@ data InputTodoItem = InputTodoItem {
   input_text :: String
 } deriving (Generic, Show)
 
-data ValidTodoItem = Valid InputTodoItem 
+data ValidTodoItem = Valid InputTodoItem deriving (Generic, Show)
 
 data TodoError = InvalidDescriptionError 
                | InvalidStatusError 
-               deriving (Show, Eq)
+               deriving (Generic, Show, Eq)
 
 type TodoValidation = InputTodoItem -> Maybe TodoError
 
 validate :: [TodoValidation] -> InputTodoItem -> Either (N.NonEmpty TodoError) ValidTodoItem
-validate = undefined
+validate validations todo = do 
+    let errors = mapMaybe ($ todo) validations
+    case errors of 
+        [] -> Right $ Valid todo
+        (herr:terrs) -> Left $ herr N.:| terrs
      
-write :: ValidTodoItem -> Int
-write = undefined
+write :: ValidTodoItem -> IO Int
+write validTodo = do
+                    conn <- createConnection
+                    let q = "insert into todo_list (description, status) values (?,?) returning id"
+                    [xs] <- query conn q validTodo
+                    return $ head xs
+
+createConnection :: IO Connection
+createConnection = connect defaultConnectInfo { connectHost = "localhost", connectPassword = "password" }
+
+
+instance ToRow ValidTodoItem where
+  toRow (Valid inputTodoItem) = toRow (input_text inputTodoItem, "active")
 
 --GET
 data State = Complete | Active 
@@ -67,6 +95,11 @@ data DeleteTodoItem = DeleteTodoItem {
 instance FromJSON InputTodoItem
 instance ToJSON InputTodoItem
 
+instance FromJSON ValidTodoItem
+instance ToJSON ValidTodoItem
+
+instance FromJSON TodoError
+instance ToJSON TodoError
 
 handlers :: ServerPart Response
 handlers = do 
@@ -76,7 +109,11 @@ handlers = do
                     method POST
                     body <- getBody
                     let todo = fromJust $ decode body :: InputTodoItem
-                    resp 201 $ toResponse (encode $ todo)
+                    case (validate defaultValidations todo) of 
+                        Left errors -> resp 400 $ toResponse (encode $ errors)
+                        Right validTodo -> do 
+                                    id <- lift $ write validTodo
+                                    resp 201 $  toResponse (encode $ id)
              ]
 
 
@@ -89,3 +126,11 @@ getBody = do
     case body of 
         Just rqbody -> return . unBody $ rqbody 
         Nothing     -> return "" 
+
+
+defaultValidations :: [TodoValidation]
+defaultValidations = [validateDescription]
+
+validateDescription :: InputTodoItem -> Maybe TodoError
+validateDescription item | all isSpace (input_text item) = Just InvalidDescriptionError
+validateDescription _ = Nothing

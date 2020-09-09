@@ -12,7 +12,17 @@ module Database (
 import Todo.TodoValidation
 import Data.Int
 import Database.PostgreSQL.Simple
+    ( FromRow,
+      ToRow,
+      query,
+      query_,
+      connect,
+      defaultConnectInfo,
+      execute_,
+      ConnectInfo(connectHost, connectPassword),
+      Connection )
 import Database.PostgreSQL.Simple.FromRow
+    ( FromRow(fromRow), field )
 import Database.PostgreSQL.Simple.FromField
 import Database.PostgreSQL.Simple.ToRow
 import Database.PostgreSQL.Simple.ToField

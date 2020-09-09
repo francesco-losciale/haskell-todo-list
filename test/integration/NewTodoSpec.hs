@@ -11,6 +11,7 @@ import Happstack.Server (simpleHTTP, nullConf,
 import Network.HTTP.Types.Status (ok200, created201, status400)
 import Network.Wreq (defaults, header, get, getWith, post, postWith, checkResponse, responseBody, responseStatus)
 import Test.Hspec ( beforeAll, describe, it, shouldBe, Spec ) 
+import Text.Read (readMaybe)
 
 import NewTodo 
 
@@ -23,9 +24,10 @@ spec = beforeAll (setUp) $ do
      it "should POST todo item" $ do
         response <- post "http://localhost:8000/todos" (toJSON todoItem)
         response ^. responseStatus `shouldBe` created201
-        toString(response ^. responseBody) `shouldBe` "{\"list\":[{\"state\":\"Active\",\"description\":\"example\"}],\"newTodoId\":123}"
+        isInt (toString(response ^. responseBody)) `shouldBe` True
  
   where
     todoItem = InputTodoItem { input_text = "example" }
+    isInt string = (readMaybe string :: Maybe Int) /= Nothing
     setUp = do forkIO main
                return () 
