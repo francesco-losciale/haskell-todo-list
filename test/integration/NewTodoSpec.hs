@@ -1,7 +1,7 @@
 module NewTodoSpec where
 
 import Control.Concurrent (forkIO)
-import Control.Lens ( (^.) ) 
+import Control.Lens ( (^.), set ) 
 import Data.Aeson (encode, decode, toJSON, FromJSON, ToJSON)
 import Data.ByteString.Lazy.UTF8 (toString, ByteString)
 import Data.Aeson (encode, decode, toJSON)
@@ -25,9 +25,14 @@ spec = beforeAll (setUp) $ do
         response <- post "http://localhost:8000/todos" (toJSON todoItem)
         response ^. responseStatus `shouldBe` created201
         isInt (toString(response ^. responseBody)) `shouldBe` True
+     it "should not POST invalid todo item" $ do
+        response <- postWith (set checkResponse (Just $ \_ _ -> return ()) defaults) "http://localhost:8000/todos" (toJSON invalidTodoItem)
+        response ^. responseStatus `shouldBe` status400
+        toString(response ^. responseBody) `shouldBe` "{\"item\":{\"input_text\":\" \"},\"errors\":[\"InvalidDescriptionError\"]}"
  
   where
     todoItem = InputTodoItem { input_text = "example" }
+    invalidTodoItem = InputTodoItem { input_text = " " }
     isInt string = (readMaybe string :: Maybe Int) /= Nothing
     setUp = do forkIO main
                return () 

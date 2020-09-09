@@ -110,7 +110,7 @@ handlers = do
                     body <- getBody
                     let todo = fromJust $ decode body :: InputTodoItem
                     case (validate defaultValidations todo) of 
-                        Left errors -> resp 400 $ toResponse (encode $ errors)
+                        Left errors -> resp 400 $ toResponse (encode $ ErrorsPayload {item = todo, errors = errors})
                         Right validTodo -> do 
                                     id <- lift $ write validTodo
                                     resp 201 $  toResponse (encode $ id)
@@ -134,3 +134,12 @@ defaultValidations = [validateDescription]
 validateDescription :: InputTodoItem -> Maybe TodoError
 validateDescription item | all isSpace (input_text item) = Just InvalidDescriptionError
 validateDescription _ = Nothing
+
+data InvalidItemPayload = ErrorsPayload
+  { item :: InputTodoItem,
+    errors :: N.NonEmpty TodoError
+  }
+  deriving (Generic, Show)
+
+instance FromJSON InvalidItemPayload
+instance ToJSON InvalidItemPayload

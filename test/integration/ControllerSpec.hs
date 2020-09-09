@@ -3,7 +3,7 @@
 module ControllerSpec where
 
 import Control.Concurrent (forkIO)
-import Control.Lens 
+import Control.Lens ( (&), (^.), (.~), set ) 
 import Control.Monad (msum)
 import Control.Monad.IO.Class (liftIO)
 import Data.Aeson (encode, decode, toJSON)
