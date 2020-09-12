@@ -4,21 +4,26 @@ module TodoSpec where
 import Todo
 import Server ( handlers )
 
-import Control.Concurrent (forkIO)
 import Control.Lens ( (^.), set, (&), (.~) ) 
-import Data.Aeson (encode, decode, toJSON, FromJSON, ToJSON)
-import Data.ByteString.Lazy.UTF8 (toString, ByteString)
-import Data.Aeson (encode, decode, toJSON)
+import Test.Hspec (shouldBe, it, describe, beforeAll, Spec)
+import Happstack.Server (simpleHTTP)
+import Happstack.Server.Types (nullConf)
+import Data.Aeson.Types (ToJSON(toJSON))
+import Network.HTTP.Types.Status (created201)
 import Data.Maybe (fromJust)
-import Happstack.Server (simpleHTTP, nullConf,
-    defaultBodyPolicy, toResponse, ok, resp,
-    Method(GET, POST), ServerPart, Response)
-import Network.HTTP.Types.Status (ok200, created201, status400)
-import Network.Wreq (defaults, header, get, getWith, post, customPayloadMethodWith, postWith, checkResponse, responseBody, responseStatus)
-import Test.Hspec ( beforeAll, describe, it, shouldBe, Spec ) 
+import Data.Aeson (decode)
+import Network.Wreq (getWith, defaults, postWith, post)
+import Network.Wreq.Lens (responseStatus)
+import Data.ByteString.Lazy.UTF8 (toString)
+import Network.Wreq.Lens (responseBody)
+import Network.Wreq.Lens (checkResponse)
+import Network.HTTP.Types (status400)
+import Network.Wreq.Lens (header)
+import Network.HTTP.Types.Status (ok200)
+import Network.Wreq (customPayloadMethodWith)
 import Text.Read (readMaybe)
+import Control.Concurrent (forkIO)
 
-import Data.Aeson.Types (fromJSON)
 
 main :: IO ()
 main = simpleHTTP nullConf $ handlers

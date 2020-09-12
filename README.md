@@ -1,29 +1,5 @@
 # Haskell Todo List - work in progress
 
-Side project to test Haskell learnings.
-
-What I learned so far: 
-
-- To learn Monads, the State monad has been rewritten from scratch following these steps:
-
-    1. Firstly, implemented an alias of a state transformer function - see `State.SimpleState`.
-    2. Secondly, replaced the alias with a constructor and added the accessor function to apply the state transformer out of the monad - see `State.State`. Only `runState` needs to be exported now.
-    3. Finally, created the Monad instance for State, reusing the bind and the return functions. This State monad can be used in a do block - see `State`.StateMonad`
-    4. Also, implemented a state monad with a transactional state inside that provides commit/rollback actions on the state - `see TransactionalStateMonad`.
-
-- Implemented a back-end web stack application using the following libraries:
-    - hspec
-    - hspec-discover
-    - postgresql-simple
-    - happstack-server
-    - happstack-lite (<-- can this be removed???)
-    - wreq
-    - lens
-    - utf8-string
-    - aeson
-
-- Monad formal definition available [here](./Monad.md)
-
 # How to run
 
 Pre-requisites:
@@ -33,7 +9,6 @@ Pre-requisites:
 Run:
 
 - To run tests, you need Docker Machine
-
 
 - Compile and build executables: `stack build` 
 
