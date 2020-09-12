@@ -18,8 +18,8 @@ write validTodo = do
                     [xs] <- query conn q validTodo
                     return $ head xs
 
-readList :: IO [TodoItem]
-readList = do
+readTodoList :: IO [TodoItem]
+readTodoList = do
                     conn <- createConnection
                     let q = "select id, description, status from todo_list"
                     query_ conn q :: IO [TodoItem]

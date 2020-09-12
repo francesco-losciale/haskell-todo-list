@@ -38,7 +38,7 @@ handlers = do
                     body <- getBody
                     let todo = fromJust $ decode body :: InputTodoItem
                     case (validate defaultValidations todo) of 
-                        Left errors -> resp 400 $ toResponse (encode $ ErrorsPayload {item = todo, errors = errors})
+                        Left errors -> resp 400 $ toResponse (encode $ InvalidItemPayload {item = todo, errors = errors})
                         Right validTodo -> do 
                                     id <- lift $ write validTodo
                                     resp 201 $  toResponse (encode $ id),
@@ -52,8 +52,8 @@ handlers = do
                                                           todo <- lift $ readTodo id
                                                           ok (toResponse $ encode todo),
                 dir "todos" $ do method GET 
-                                 -- read all todos from db
-                                 ok (toResponse $ encode [TodoItem {todo_id=1, text ="example", state = Active }])
+                                 list <- lift readTodoList
+                                 ok (toResponse $ encode list)
              ]
 
 
@@ -66,4 +66,3 @@ getBody = do
     case body of 
         Just rqbody -> return . unBody $ rqbody 
         Nothing     -> return "" 
-
