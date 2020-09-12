@@ -86,3 +86,4 @@ and make it an integration test. It makes more sense to test "controllers" and "
     In both cases, the function/behaviour lifted is the same. In the first case. It’s the context we’ve lifted the function over that determines how the function behaves with the data. The datatype and the Functor instance determine the Context. Further, ideally the context is also the only place where exception handling sits.
 - use records instead of data constructor, so that it is easier to refactor adding or removing fields. 
 - tdd only after having defined your model
+- follow yagni and try to write as little code as possible, this would avoid you rabbit holes and waste of time
