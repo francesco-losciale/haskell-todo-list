@@ -32,28 +32,32 @@ main = simpleHTTP nullConf $ handlers
 spec :: Spec
 spec = beforeAll (setUp) $ do
   describe "Todo" $ do
-     it "should POST todo item" $ do
+     it "should POST todo item and return an int as ID" $ do
         response <- post "http://localhost:8000/todos" (toJSON todoItem)
         response ^. responseStatus `shouldBe` created201
         isInt (toString(response ^. responseBody)) `shouldBe` True
-     it "should not POST invalid todo item" $ do
+     
+     it "should not POST invalid todo item and return an error" $ do
         response <- postWith (set checkResponse (Just $ \_ _ -> return ()) defaults) "http://localhost:8000/todos" (toJSON invalidTodoItem)
         response ^. responseStatus `shouldBe` status400
         toString(response ^. responseBody) `shouldBe` "{\"item\":{\"input_text\":\" \"},\"errors\":[\"InvalidDescriptionError\"]}"
-     it "should GET todo items" $ do
-        post "http://localhost:8000/todos" (toJSON todoItem)
-        post "http://localhost:8000/todos" (toJSON todoItem)
-        let opts = defaults & header "Content-Type" .~ ["application/json"]
+     
+     it "should POST two items and GET them" $ do
+        deleteTodoList
+        firstTodo <- post "http://localhost:8000/todos" (toJSON todoItem)
+        secondTodo <- post "http://localhost:8000/todos" (toJSON todoItem)
+         
         response <- getWith opts "http://localhost:8000/todos"
         response ^. responseStatus `shouldBe` ok200
-        let result = (fromJust $ decode (response ^. responseBody)) 
-        and [ text x == "example" | x <- result ]`shouldBe` True
+        
+        let list = (fromJust $ decode (response ^. responseBody)) 
+        [ todo_id todo | todo <- list ] `shouldBe` map idFromPostResponse [firstTodo, secondTodo]
+
      it "should GET  a specific todo item" $ do
         postResponse <- post "http://localhost:8000/todos" (toJSON todoItem)
         postResponse ^. responseStatus `shouldBe` created201
         let id = toString(postResponse ^. responseBody)
-        let uri = concat ["http://localhost:8000/todos/", id]
-        let opts = defaults & header "Content-Type" .~ ["application/json"]
+        let uri = todoUri id
         response <- getWith opts uri
         response ^. responseStatus `shouldBe` ok200
         [TodoItem {todo_id = toInt id, text = input_text todoItem, state = Active }] `shouldBe` (fromJust $ decode (response ^. responseBody))
@@ -61,18 +65,17 @@ spec = beforeAll (setUp) $ do
         postResponse <- post "http://localhost:8000/todos" (toJSON todoItem)
         postResponse ^. responseStatus `shouldBe` created201
         let id = toString(postResponse ^. responseBody)
-        
-        let opts = defaults & header "Content-Type" .~ ["application/json"]
-        let uri = concat ["http://localhost:8000/todos/", id]
+        let uri = todoUri id
         patchResponse <- customPayloadMethodWith "PATCH" opts uri (toJSON $ UpdatedTodoItem { newState = Complete})
-
-        let uri = concat ["http://localhost:8000/todos/", id]
-        let opts = defaults & header "Content-Type" .~ ["application/json"]
+        
         response <- getWith opts uri
         response ^. responseStatus `shouldBe` ok200 
         (fromJust $ decode (response ^. responseBody)) `shouldBe` [TodoItem {todo_id = toInt id, text = input_text todoItem, state = Complete }]
  
   where
+    todoUri id = concat ["http://localhost:8000/todos/", id]
+    opts = defaults & header "Content-Type" .~ ["application/json"] 
+    idFromPostResponse response = toInt (toString(response ^. responseBody))
     todoItem = InputTodoItem { input_text = "example" }
     invalidTodoItem = InputTodoItem { input_text = " " }
     isInt string = (readMaybe string :: Maybe Int) /= Nothing
