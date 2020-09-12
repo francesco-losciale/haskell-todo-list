@@ -26,7 +26,7 @@ source-repository head
 library
   exposed-modules:
       Main
-      NewTodo
+      Todo
       State.SimpleState
       State.State
       State.StateMonad
@@ -54,7 +54,7 @@ library
 executable haskell-todo-list-exe
   main-is: Main.hs
   other-modules:
-      NewTodo
+      Todo
       State.SimpleState
       State.State
       State.StateMonad
@@ -84,7 +84,7 @@ test-suite haskell-todo-list-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      NewTodoSpec
+      TodoSpec
       Paths_haskell_todo_list
   hs-source-dirs:
       test

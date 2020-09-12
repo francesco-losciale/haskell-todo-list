@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module NewTodoSpec where
+module TodoSpec where
 
 import Control.Concurrent (forkIO)
 import Control.Lens ( (^.), set, (&), (.~) ) 
@@ -15,7 +15,7 @@ import Network.Wreq (defaults, header, get, getWith, post, customPayloadMethodWi
 import Test.Hspec ( beforeAll, describe, it, shouldBe, Spec ) 
 import Text.Read (readMaybe)
 
-import NewTodo
+import Todo
 import Data.Aeson.Types (fromJSON)
 
 main :: IO ()
@@ -23,7 +23,7 @@ main = simpleHTTP nullConf $ handlers
 
 spec :: Spec
 spec = beforeAll (setUp) $ do
-  describe "NewTodo" $ do
+  describe "Todo" $ do
      it "should POST todo item" $ do
         response <- post "http://localhost:8000/todos" (toJSON todoItem)
         response ^. responseStatus `shouldBe` created201

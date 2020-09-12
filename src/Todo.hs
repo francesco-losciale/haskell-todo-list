@@ -2,7 +2,7 @@
 {-# LANGUAGE ExtendedDefaultRules #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
-module NewTodo where
+module Todo where
 
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad (msum)
