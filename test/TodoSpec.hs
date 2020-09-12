@@ -47,7 +47,7 @@ spec = beforeAll (setUp) $ do
         firstTodo <- post "http://localhost:8000/todos" (toJSON todoItem)
         secondTodo <- post "http://localhost:8000/todos" (toJSON todoItem)
          
-        response <- getWith opts "http://localhost:8000/todos"
+        response <- getWith reqHttpOpts "http://localhost:8000/todos"
         response ^. responseStatus `shouldBe` ok200
         
         let list = (fromJust $ decode (response ^. responseBody)) 
@@ -58,7 +58,7 @@ spec = beforeAll (setUp) $ do
         let id = idFromPostResponse postResponse
         let uri = todoUri $ show id
 
-        response <- getWith opts uri
+        response <- getWith reqHttpOpts uri
         response ^. responseStatus `shouldBe` ok200
 
         let list = fromJust $ decode $ response ^. responseBody
@@ -70,20 +70,25 @@ spec = beforeAll (setUp) $ do
         let id = idFromPostResponse postResponse
         let uri = todoUri $ show id
 
-        patchResponse <- customPayloadMethodWith "PATCH" opts uri (toJSON $ UpdatedTodoItem { newState = Complete})
+        patchResponse <- customPayloadMethodWith "PATCH" reqHttpOpts uri (toJSON $ UpdatedTodoItem { newState = Complete})
         
-        response <- getWith opts uri
+        response <- getWith reqHttpOpts uri
         response ^. responseStatus `shouldBe` ok200 
         (fromJust $ decode (response ^. responseBody)) `shouldBe` [TodoItem {todo_id = id, text = input_text todoItem, state = Complete }]
  
   where
+    -- utilities
     todoUri id = concat ["http://localhost:8000/todos/", id]
-    opts = defaults & header "Content-Type" .~ ["application/json"] 
+    reqHttpOpts = defaults & header "Content-Type" .~ ["application/json"] 
     idFromPostResponse response = toInt (toString(response ^. responseBody))
-    todoItem = InputTodoItem { input_text = "example" }
-    invalidTodoItem = InputTodoItem { input_text = " " }
     isInt string = (readMaybe string :: Maybe Int) /= Nothing
     toInt string = fromJust (readMaybe string :: Maybe Int)
+    
+    -- stub data
+    todoItem = InputTodoItem { input_text = "example" }
+    invalidTodoItem = InputTodoItem { input_text = " " }
+
+    -- before all
     setUp = do deleteTodoList
                forkIO main
                return () 
