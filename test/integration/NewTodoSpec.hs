@@ -57,11 +57,12 @@ spec = beforeAll (setUp) $ do
         let uri = concat ["http://localhost:8000/todos/", id]
         patchResponse <- customPayloadMethodWith "PATCH" opts uri (toJSON $ UpdatedTodoItem { newState = Complete})
 
+        let uri = concat ["http://localhost:8000/todos/", id]
         let opts = defaults & header "Content-Type" .~ ["application/json"]
-        response <- getWith opts "http://localhost:8000/todos"
-        response ^. responseStatus `shouldBe` ok200
+        response <- getWith opts uri
+        response ^. responseStatus `shouldBe` ok200 
         let result = (fromJust $ decode (response ^. responseBody)) 
-        and [ text x == "example" | x <- result ]`shouldBe` True        
+        state result `shouldBe` Complete
  
   where
     todoItem = InputTodoItem { input_text = "example" }
