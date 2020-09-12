@@ -53,24 +53,28 @@ spec = beforeAll (setUp) $ do
         let list = (fromJust $ decode (response ^. responseBody)) 
         [ todo_id todo | todo <- list ] `shouldBe` map idFromPostResponse [firstTodo, secondTodo]
 
-     it "should GET  a specific todo item" $ do
+     it "should POST and GET a specific todo item by ID" $ do
         postResponse <- post "http://localhost:8000/todos" (toJSON todoItem)
-        postResponse ^. responseStatus `shouldBe` created201
-        let id = toString(postResponse ^. responseBody)
-        let uri = todoUri id
+        let id = idFromPostResponse postResponse
+        let uri = todoUri $ show id
+
         response <- getWith opts uri
         response ^. responseStatus `shouldBe` ok200
-        [TodoItem {todo_id = toInt id, text = input_text todoItem, state = Active }] `shouldBe` (fromJust $ decode (response ^. responseBody))
+
+        let list = fromJust $ decode $ response ^. responseBody
+        list `shouldBe` [TodoItem {todo_id = id, text = input_text todoItem, state = Active }] 
+
      it "should PATCH todo state to Complete" $ do
         postResponse <- post "http://localhost:8000/todos" (toJSON todoItem)
         postResponse ^. responseStatus `shouldBe` created201
-        let id = toString(postResponse ^. responseBody)
-        let uri = todoUri id
+        let id = idFromPostResponse postResponse
+        let uri = todoUri $ show id
+
         patchResponse <- customPayloadMethodWith "PATCH" opts uri (toJSON $ UpdatedTodoItem { newState = Complete})
         
         response <- getWith opts uri
         response ^. responseStatus `shouldBe` ok200 
-        (fromJust $ decode (response ^. responseBody)) `shouldBe` [TodoItem {todo_id = toInt id, text = input_text todoItem, state = Complete }]
+        (fromJust $ decode (response ^. responseBody)) `shouldBe` [TodoItem {todo_id = id, text = input_text todoItem, state = Complete }]
  
   where
     todoUri id = concat ["http://localhost:8000/todos/", id]
