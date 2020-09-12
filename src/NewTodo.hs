@@ -16,9 +16,11 @@ import Database.PostgreSQL.Simple
       connect,
       defaultConnectInfo,
       execute_,
+      execute,
       ConnectInfo(connectHost, connectPassword),
       Connection )
 import Database.PostgreSQL.Simple.FromField ( FromField(..) )
+import Database.PostgreSQL.Simple.ToField ( ToField(..) )
 import Database.PostgreSQL.Simple.FromRow
     ( FromRow(fromRow), field )
 import Database.PostgreSQL.Simple.ToRow      
@@ -78,7 +80,7 @@ createConnection = connect defaultConnectInfo { connectHost = "localhost", conne
 
 
 instance ToRow ValidTodoItem where
-  toRow (Valid inputTodoItem) = toRow (input_text inputTodoItem, "active")
+  toRow (Valid inputTodoItem) = toRow (input_text inputTodoItem, "Active")
 
 --GET
 data State = Complete | Active deriving (Generic, Show, Eq)
@@ -96,8 +98,12 @@ instance FromField State where
   fromField field mdata = do
     value <- fromField field mdata
     case value :: String of
-      "complete" -> return Complete
-      "active" -> return Active
+      "Complete" -> return Complete
+      "Active" -> return Active
+
+instance ToField State where
+    toField Complete  = toField ("Complete" :: String)
+    toField Active = toField ("Active" :: String)      
 
 instance FromRow TodoItem where
     fromRow = TodoItem <$> field <*> field <*> field
@@ -110,9 +116,11 @@ data UpdatedTodoItem = UpdatedTodoItem {
 instance ToJSON UpdatedTodoItem
 instance FromJSON UpdatedTodoItem
 
-
-done :: [TodoValidation] -> TodoItem -> UpdatedTodoItem
-done = undefined
+updateTodo :: Int64 -> UpdatedTodoItem -> IO Int64
+updateTodo todo_id updatedTodo = do
+                    conn <- createConnection
+                    let state = newState updatedTodo
+                    execute conn "update todo_list set status = ? where id = ?" (state, todo_id)
 
 --DELETE {id}
 data DeleteTodoItem = DeleteTodoItem {
@@ -152,12 +160,13 @@ handlers = do
                                     resp 201 $  toResponse (encode $ id),
                 dir "todos" $ path $ \(id :: Int64) -> do method PATCH
                                                           body <- getBody
-                                                          let state = newState (fromJust $ decode body :: UpdatedTodoItem)
-                                                          -- save state on db
-                                                          ok (toResponse $ encode state),                                   
+                                                          let updateTodoItem = (fromJust $ decode body :: UpdatedTodoItem)
+                                                          lift $ updateTodo id updateTodoItem
+                                                          [todo] <- lift $ readTodo id
+                                                          ok (toResponse $ encode $ todo),                                   
                 dir "todos" $ path $ \(id :: Int64) -> do method GET 
-                                                          lift $ readTodo id
-                                                          ok (toResponse $ encode id),
+                                                          todo <- lift $ readTodo id
+                                                          ok (toResponse $ encode todo),
                 dir "todos" $ do method GET 
                                  -- read all todos from db
                                  ok (toResponse $ encode [TodoItem {todo_id=1, text ="example", state = Active }])

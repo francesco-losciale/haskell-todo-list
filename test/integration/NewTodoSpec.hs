@@ -16,6 +16,7 @@ import Test.Hspec ( beforeAll, describe, it, shouldBe, Spec )
 import Text.Read (readMaybe)
 
 import NewTodo 
+import Data.Aeson.Types (fromJSON)
 
 main :: IO ()
 main = simpleHTTP nullConf $ handlers
@@ -47,7 +48,7 @@ spec = beforeAll (setUp) $ do
         let opts = defaults & header "Content-Type" .~ ["application/json"]
         response <- getWith opts uri
         response ^. responseStatus `shouldBe` ok200
-        id `shouldBe` (toString (response ^. responseBody))
+        [TodoItem {todo_id = toInt id, text = input_text todoItem, state = Active }] `shouldBe` (fromJust $ decode (response ^. responseBody))
      it "should PATCH todo state to Complete" $ do
         postResponse <- post "http://localhost:8000/todos" (toJSON todoItem)
         postResponse ^. responseStatus `shouldBe` created201
@@ -61,11 +62,12 @@ spec = beforeAll (setUp) $ do
         let opts = defaults & header "Content-Type" .~ ["application/json"]
         response <- getWith opts uri
         response ^. responseStatus `shouldBe` ok200 
-        id `shouldBe` (toString (response ^. responseBody))
+        (fromJust $ decode (response ^. responseBody)) `shouldBe` [TodoItem {todo_id = toInt id, text = input_text todoItem, state = Complete }]
  
   where
     todoItem = InputTodoItem { input_text = "example" }
     invalidTodoItem = InputTodoItem { input_text = " " }
     isInt string = (readMaybe string :: Maybe Int) /= Nothing
+    toInt string = fromJust (readMaybe string :: Maybe Int)
     setUp = do forkIO main
                return () 
