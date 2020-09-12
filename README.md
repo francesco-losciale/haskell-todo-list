@@ -29,7 +29,7 @@ Run:
 
 - Notes about monads are here https://github.com/francesco-losciale/haskell-state-monad
 
-- Some more [here](./Notes.md)
+- Takeaways [here](./Notes.md)
 
 - Useful links and resources [here](./Links.md)
 
