@@ -1,10 +1,12 @@
+{-# LANGUAGE OverloadedStrings #-}
 module NewTodoSpec where
 
 import Control.Concurrent (forkIO)
-import Control.Lens ( (^.), set ) 
+import Control.Lens ( (^.), set, (&), (.~) ) 
 import Data.Aeson (encode, decode, toJSON, FromJSON, ToJSON)
 import Data.ByteString.Lazy.UTF8 (toString, ByteString)
 import Data.Aeson (encode, decode, toJSON)
+import Data.Maybe (fromJust)
 import Happstack.Server (simpleHTTP, nullConf,
     defaultBodyPolicy, toResponse, ok, resp,
     Method(GET, POST), ServerPart, Response)
@@ -29,6 +31,14 @@ spec = beforeAll (setUp) $ do
         response <- postWith (set checkResponse (Just $ \_ _ -> return ()) defaults) "http://localhost:8000/todos" (toJSON invalidTodoItem)
         response ^. responseStatus `shouldBe` status400
         toString(response ^. responseBody) `shouldBe` "{\"item\":{\"input_text\":\" \"},\"errors\":[\"InvalidDescriptionError\"]}"
+     it "should GET todo items" $ do
+        post "http://localhost:8000/todos" (toJSON todoItem)
+        post "http://localhost:8000/todos" (toJSON todoItem)
+        let opts = defaults & header "Content-Type" .~ ["application/json"]
+        response <- getWith opts "http://localhost:8000/todos"
+        response ^. responseStatus `shouldBe` ok200
+        let result = (fromJust $ decode (response ^. responseBody)) 
+        and [ text x == "example" | x <- result ]`shouldBe` True
  
   where
     todoItem = InputTodoItem { input_text = "example" }

@@ -23,7 +23,7 @@ import Database.PostgreSQL.Simple
       Connection )
 import Database.PostgreSQL.Simple.FromRow
     ( FromRow(fromRow), field )
-import Database.PostgreSQL.Simple.FromField
+import Database.PostgreSQL.Simple.FromField ( FromField(..) )
 import Database.PostgreSQL.Simple.ToRow
 import Database.PostgreSQL.Simple.ToField
 

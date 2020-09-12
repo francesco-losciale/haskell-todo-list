@@ -16,6 +16,7 @@ import Database.PostgreSQL.Simple
       execute_,
       ConnectInfo(connectHost, connectPassword),
       Connection )
+import Database.PostgreSQL.Simple.FromField ( FromField(..) )
 import Database.PostgreSQL.Simple.ToRow      
 import Data.Aeson (encode, decode, toJSON, FromJSON, ToJSON)
 import Data.ByteString.Lazy.UTF8 (toString, ByteString)
@@ -62,13 +63,23 @@ instance ToRow ValidTodoItem where
   toRow (Valid inputTodoItem) = toRow (input_text inputTodoItem, "active")
 
 --GET
-data State = Complete | Active 
+data State = Complete | Active deriving (Generic, Show, Eq)
 
 data TodoItem = TodoItem {
   todo_id :: Int,
   text :: String,
   state :: State
-}
+} deriving (Generic, Show, Eq)
+
+instance FromJSON TodoItem
+instance FromJSON State
+
+instance FromField State where
+  fromField field mdata = do
+    value <- fromField field mdata
+    case value :: String of
+      "complete" -> return Complete
+      "active" -> return Active
 
 read :: TodoItem
 read = undefined
@@ -101,6 +112,9 @@ instance ToJSON ValidTodoItem
 instance FromJSON TodoError
 instance ToJSON TodoError
 
+instance ToJSON TodoItem
+instance ToJSON State
+
 handlers :: ServerPart Response
 handlers = do 
             decodeBody (defaultBodyPolicy "/tmp/" 0 1000 1000)
@@ -113,7 +127,10 @@ handlers = do
                         Left errors -> resp 400 $ toResponse (encode $ ErrorsPayload {item = todo, errors = errors})
                         Right validTodo -> do 
                                     id <- lift $ write validTodo
-                                    resp 201 $  toResponse (encode $ id)
+                                    resp 201 $  toResponse (encode $ id),
+                dir "todos" $ do method GET 
+                                 ok (toResponse $ encode [TodoItem {todo_id=1, text ="example", state = Active }])                                 
+
              ]
 
 
