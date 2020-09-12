@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a39ecfe5077350a6473a24e6dcb97802dc89d394b145db12f16c398df183352b
+-- hash: 80b4d2046ae661fd1d63b52a924fbc5ef0c023badb1127429407aeb40d8a367c
 
 name:           haskell-todo-list
 version:        0.1.0.0
@@ -25,17 +25,12 @@ source-repository head
 
 library
   exposed-modules:
-      Controller
-      Database
       Main
       NewTodo
-      Server
       State.SimpleState
       State.State
       State.StateMonad
       State.TransactionalStateMonad
-      Todo.Todo
-      Todo.TodoValidation
   other-modules:
       Paths_haskell_todo_list
   hs-source-dirs:
@@ -59,16 +54,11 @@ library
 executable haskell-todo-list-exe
   main-is: Main.hs
   other-modules:
-      Controller
-      Database
       NewTodo
-      Server
       State.SimpleState
       State.State
       State.StateMonad
       State.TransactionalStateMonad
-      Todo.Todo
-      Todo.TodoValidation
       Paths_haskell_todo_list
   hs-source-dirs:
       src
@@ -90,48 +80,14 @@ executable haskell-todo-list-exe
     , wreq
   default-language: Haskell2010
 
-test-suite haskell-todo-list-integration-test
+test-suite haskell-todo-list-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      ControllerSpec
-      DatabaseSpec
       NewTodoSpec
       Paths_haskell_todo_list
   hs-source-dirs:
-      test/integration
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N
-  build-depends:
-      aeson
-    , base >=4.7 && <5
-    , containers
-    , happstack-lite
-    , happstack-server
-    , haskell-todo-list
-    , hspec
-    , hspec-discover
-    , http-types
-    , lens
-    , postgresql-simple
-    , transformers
-    , utf8-string
-    , wreq
-  default-language: Haskell2010
-
-test-suite haskell-todo-list-unit-test
-  type: exitcode-stdio-1.0
-  main-is: Spec.hs
-  other-modules:
-      JsonSerializerSpec
-      State.SimpleStateSpec
-      State.StateMonadSpec
-      State.StateSpec
-      State.StateTransMonadSpec
-      Todo.TodoSpec
-      Todo.TodoValidationSpec
-      Paths_haskell_todo_list
-  hs-source-dirs:
-      test/unit
+      test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson

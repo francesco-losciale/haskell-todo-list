@@ -48,23 +48,13 @@ executables:
     - haskell-todo-list
 
 tests:
-  haskell-todo-list-unit-test:
+  haskell-todo-list-test:
     main:                Spec.hs
-    source-dirs:         test/unit
+    source-dirs:         test
     ghc-options:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
     - haskell-todo-list
-
-  haskell-todo-list-integration-test:
-    main:                Spec.hs
-    source-dirs:         test/integration
-    ghc-options:
-      - -threaded
-      - -rtsopts
-      - -with-rtsopts=-N
-    dependencies:
-      - haskell-todo-list
-      - http-types
+    - http-types

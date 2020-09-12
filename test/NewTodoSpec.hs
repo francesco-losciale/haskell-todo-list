@@ -15,7 +15,7 @@ import Network.Wreq (defaults, header, get, getWith, post, customPayloadMethodWi
 import Test.Hspec ( beforeAll, describe, it, shouldBe, Spec ) 
 import Text.Read (readMaybe)
 
-import NewTodo 
+import NewTodo
 import Data.Aeson.Types (fromJSON)
 
 main :: IO ()

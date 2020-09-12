@@ -43,6 +43,8 @@ Run:
 
 - Run an individual test: `stack test --test-arguments "--match=SimpleState"` 
 
+- Run application `stack exec haskell-todo-list-exe`
+
 - If Hlint is installed, run `hlint .` in the project root directory
 
 
