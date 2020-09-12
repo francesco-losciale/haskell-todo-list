@@ -1,3 +1,4 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE ExtendedDefaultRules #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -24,9 +25,10 @@ import Data.Char (isSpace)
 import qualified Data.List.NonEmpty as N
 import Data.Maybe (fromJust, mapMaybe)
 import GHC.Generics ( Generic )
-import Happstack.Server (askRq, dir, method, decodeBody, 
+import Happstack.Server (askRq, dir, method, decodeBody, path,
     defaultBodyPolicy, takeRequestBody, toResponse, ok, unBody, resp,
     Method(GET, POST), ServerPart, Response)
+import Data.Int (Int64)
 
 -- POST
 data InputTodoItem = InputTodoItem {
@@ -84,12 +86,14 @@ instance FromField State where
 read :: TodoItem
 read = undefined
 
---PUT {id}/complete
-data CompleteTodoItem = CompleteTodoItem {
-  completed_todo_id :: Int
-}
+--PATCH {id}
+data UpdatedTodoItem = UpdatedTodoItem {
+  newState :: State
+} deriving (Generic, Show, Eq)
 
-done :: [TodoValidation] -> TodoItem -> CompleteTodoItem
+instance ToJSON UpdatedTodoItem
+
+done :: [TodoValidation] -> TodoItem -> UpdatedTodoItem
 done = undefined
 
 --DELETE {id}
@@ -128,9 +132,10 @@ handlers = do
                         Right validTodo -> do 
                                     id <- lift $ write validTodo
                                     resp 201 $  toResponse (encode $ id),
+                dir "todos" $ path $ \(id :: Int64) ->  do method GET 
+                                                           ok (toResponse $ encode id),
                 dir "todos" $ do method GET 
-                                 ok (toResponse $ encode [TodoItem {todo_id=1, text ="example", state = Active }])                                 
-
+                                 ok (toResponse $ encode [TodoItem {todo_id=1, text ="example", state = Active }])
              ]
 
 

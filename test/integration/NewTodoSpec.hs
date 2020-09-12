@@ -11,7 +11,7 @@ import Happstack.Server (simpleHTTP, nullConf,
     defaultBodyPolicy, toResponse, ok, resp,
     Method(GET, POST), ServerPart, Response)
 import Network.HTTP.Types.Status (ok200, created201, status400)
-import Network.Wreq (defaults, header, get, getWith, post, postWith, checkResponse, responseBody, responseStatus)
+import Network.Wreq (defaults, header, get, getWith, post, customPayloadMethodWith, postWith, checkResponse, responseBody, responseStatus)
 import Test.Hspec ( beforeAll, describe, it, shouldBe, Spec ) 
 import Text.Read (readMaybe)
 
@@ -39,6 +39,29 @@ spec = beforeAll (setUp) $ do
         response ^. responseStatus `shouldBe` ok200
         let result = (fromJust $ decode (response ^. responseBody)) 
         and [ text x == "example" | x <- result ]`shouldBe` True
+     it "should GET  a specific todo item" $ do
+        postResponse <- post "http://localhost:8000/todos" (toJSON todoItem)
+        postResponse ^. responseStatus `shouldBe` created201
+        let id = toString(postResponse ^. responseBody)
+        let uri = concat ["http://localhost:8000/todos/", id]
+        let opts = defaults & header "Content-Type" .~ ["application/json"]
+        response <- getWith opts uri
+        response ^. responseStatus `shouldBe` ok200
+        id `shouldBe` (toString (response ^. responseBody))
+     it "should PATCH todo state to Complete" $ do
+        postResponse <- post "http://localhost:8000/todos" (toJSON todoItem)
+        postResponse ^. responseStatus `shouldBe` created201
+        let id = toString(postResponse ^. responseBody)
+        
+        let opts = defaults & header "Content-Type" .~ ["application/json"]
+        let uri = concat ["http://localhost:8000/todos/", id]
+        patchResponse <- customPayloadMethodWith "PATCH" opts uri (toJSON $ UpdatedTodoItem { newState = Complete})
+
+        let opts = defaults & header "Content-Type" .~ ["application/json"]
+        response <- getWith opts "http://localhost:8000/todos"
+        response ^. responseStatus `shouldBe` ok200
+        let result = (fromJust $ decode (response ^. responseBody)) 
+        and [ text x == "example" | x <- result ]`shouldBe` True        
  
   where
     todoItem = InputTodoItem { input_text = "example" }
