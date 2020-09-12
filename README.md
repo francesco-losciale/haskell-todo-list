@@ -56,6 +56,7 @@ Run:
     - ~~compare the two solutions, add inline comments~~
     - implement Lens on TodoItem
 - Learn Lens https://hackage.haskell.org/package/lens-tutorial-1.0.4/docs/Control-Lens-Tutorial.html - watch talk from Pawel Szulc on Lenses - https://vimeo.com/user119686798 use lens in TodoValidation
+- Go through Haskell cheat sheet and review code
 - Use `Data.Cache` to temporarily save list without peristing it - https://hackage.haskell.org/package/cache-0.1.3.0/docs/Data-Cache.html
 - Exercises: Haskell patterns minibook: https://kowainik.github.io/posts/haskell-mini-patterns <-- to learn idiomatic code
 - Can you see any use case for STM? Katas?

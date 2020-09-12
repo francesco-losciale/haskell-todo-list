@@ -61,8 +61,7 @@ spec = beforeAll (setUp) $ do
         let opts = defaults & header "Content-Type" .~ ["application/json"]
         response <- getWith opts uri
         response ^. responseStatus `shouldBe` ok200 
-        let result = (fromJust $ decode (response ^. responseBody)) 
-        state result `shouldBe` Complete
+        id `shouldBe` (toString (response ^. responseBody))
  
   where
     todoItem = InputTodoItem { input_text = "example" }

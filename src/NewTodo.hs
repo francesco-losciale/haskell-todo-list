@@ -27,7 +27,7 @@ import Data.Maybe (fromJust, mapMaybe)
 import GHC.Generics ( Generic )
 import Happstack.Server (askRq, dir, method, decodeBody, path,
     defaultBodyPolicy, takeRequestBody, toResponse, ok, unBody, resp,
-    Method(GET, POST), ServerPart, Response)
+    Method(GET, POST, PATCH), ServerPart, Response)
 import Data.Int (Int64)
 
 -- POST
@@ -92,6 +92,8 @@ data UpdatedTodoItem = UpdatedTodoItem {
 } deriving (Generic, Show, Eq)
 
 instance ToJSON UpdatedTodoItem
+instance FromJSON UpdatedTodoItem
+
 
 done :: [TodoValidation] -> TodoItem -> UpdatedTodoItem
 done = undefined
@@ -132,8 +134,12 @@ handlers = do
                         Right validTodo -> do 
                                     id <- lift $ write validTodo
                                     resp 201 $  toResponse (encode $ id),
-                dir "todos" $ path $ \(id :: Int64) ->  do method GET 
-                                                           ok (toResponse $ encode id),
+                dir "todos" $ path $ \(id :: Int64) -> do method PATCH
+                                                          body <- getBody
+                                                          let state = newState (fromJust $ decode body :: UpdatedTodoItem)
+                                                          ok (toResponse $ encode state),                                   
+                dir "todos" $ path $ \(id :: Int64) -> do method GET 
+                                                          ok (toResponse $ encode id),
                 dir "todos" $ do method GET 
                                  ok (toResponse $ encode [TodoItem {todo_id=1, text ="example", state = Active }])
              ]
