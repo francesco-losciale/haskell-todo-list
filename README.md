@@ -89,3 +89,4 @@ and make it an integration test. It makes more sense to test "controllers" and "
 - use records instead of data constructor, so that it is easier to refactor adding or removing fields. 
 - tdd only after having defined your model
 - follow yagni and try to write as little code as possible, this would avoid you rabbit holes and waste of time
+- Feeling: I went with the same confidence of java, rabbit hole

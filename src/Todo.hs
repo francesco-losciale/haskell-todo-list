@@ -56,29 +56,6 @@ validate validations todo = do
         [] -> Right $ Valid todo
         (herr:terrs) -> Left $ herr N.:| terrs
      
-write :: ValidTodoItem -> IO Int
-write validTodo = do
-                    conn <- createConnection
-                    let q = "insert into todo_list (description, status) values (?,?) returning id"
-                    [xs] <- query conn q validTodo
-                    return $ head xs
-
-readList :: IO [TodoItem]
-readList = do
-                    conn <- createConnection
-                    let q = "select id, description, status from todo_list"
-                    query_ conn q :: IO [TodoItem]
-
-readTodo :: Int64 -> IO [TodoItem]
-readTodo todo_id = do
-            conn <- createConnection
-            let q = "select id, description, status from todo_list where id = ? "
-            (query conn q (Only todo_id)) :: IO [TodoItem]
-
-createConnection :: IO Connection
-createConnection = connect defaultConnectInfo { connectHost = "localhost", connectPassword = "password" }
-
-
 instance ToRow ValidTodoItem where
   toRow (Valid inputTodoItem) = toRow (input_text inputTodoItem, "Active")
 
@@ -116,12 +93,6 @@ data UpdatedTodoItem = UpdatedTodoItem {
 instance ToJSON UpdatedTodoItem
 instance FromJSON UpdatedTodoItem
 
-updateTodo :: Int64 -> UpdatedTodoItem -> IO Int64
-updateTodo todo_id updatedTodo = do
-                    conn <- createConnection
-                    let state = newState updatedTodo
-                    execute conn "update todo_list set status = ? where id = ?" (state, todo_id)
-
 --DELETE {id}
 data DeleteTodoItem = DeleteTodoItem {
   deleted_todo_id :: Int
@@ -144,45 +115,6 @@ instance ToJSON TodoError
 
 instance ToJSON TodoItem
 instance ToJSON State
-
-handlers :: ServerPart Response
-handlers = do 
-            decodeBody (defaultBodyPolicy "/tmp/" 0 1000 1000)
-            msum [
-                dir "todos" $ do 
-                    method POST
-                    body <- getBody
-                    let todo = fromJust $ decode body :: InputTodoItem
-                    case (validate defaultValidations todo) of 
-                        Left errors -> resp 400 $ toResponse (encode $ ErrorsPayload {item = todo, errors = errors})
-                        Right validTodo -> do 
-                                    id <- lift $ write validTodo
-                                    resp 201 $  toResponse (encode $ id),
-                dir "todos" $ path $ \(id :: Int64) -> do method PATCH
-                                                          body <- getBody
-                                                          let updateTodoItem = (fromJust $ decode body :: UpdatedTodoItem)
-                                                          lift $ updateTodo id updateTodoItem
-                                                          [todo] <- lift $ readTodo id
-                                                          ok (toResponse $ encode $ todo),                                   
-                dir "todos" $ path $ \(id :: Int64) -> do method GET 
-                                                          todo <- lift $ readTodo id
-                                                          ok (toResponse $ encode todo),
-                dir "todos" $ do method GET 
-                                 -- read all todos from db
-                                 ok (toResponse $ encode [TodoItem {todo_id=1, text ="example", state = Active }])
-             ]
-
-
--- https://stackoverflow.com/questions/8865793/how-to-create-json-rest-api-with-happstack-json-body
--- https://stackoverflow.com/questions/35592415/multiple-monads-in-one-do-block
-getBody :: ServerPart ByteString
-getBody = do
-    req  <- askRq 
-    body <- liftIO $ takeRequestBody req 
-    case body of 
-        Just rqbody -> return . unBody $ rqbody 
-        Nothing     -> return "" 
-
 
 defaultValidations :: [TodoValidation]
 defaultValidations = [validateDescription]

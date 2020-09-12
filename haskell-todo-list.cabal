@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 80b4d2046ae661fd1d63b52a924fbc5ef0c023badb1127429407aeb40d8a367c
+-- hash: f69d90088943862f139e60deb384d5c7ff8c3c1288613f5083ee0e8c88ea5414
 
 name:           haskell-todo-list
 version:        0.1.0.0
@@ -26,11 +26,13 @@ source-repository head
 library
   exposed-modules:
       Main
-      Todo
+      Repository
+      Server
       State.SimpleState
       State.State
       State.StateMonad
       State.TransactionalStateMonad
+      Todo
   other-modules:
       Paths_haskell_todo_list
   hs-source-dirs:
@@ -54,11 +56,13 @@ library
 executable haskell-todo-list-exe
   main-is: Main.hs
   other-modules:
-      Todo
+      Repository
+      Server
       State.SimpleState
       State.State
       State.StateMonad
       State.TransactionalStateMonad
+      Todo
       Paths_haskell_todo_list
   hs-source-dirs:
       src

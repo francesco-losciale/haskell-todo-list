@@ -1,6 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 module TodoSpec where
 
+import Todo
+import Server ( handlers )
+
 import Control.Concurrent (forkIO)
 import Control.Lens ( (^.), set, (&), (.~) ) 
 import Data.Aeson (encode, decode, toJSON, FromJSON, ToJSON)
@@ -15,7 +18,6 @@ import Network.Wreq (defaults, header, get, getWith, post, customPayloadMethodWi
 import Test.Hspec ( beforeAll, describe, it, shouldBe, Spec ) 
 import Text.Read (readMaybe)
 
-import Todo
 import Data.Aeson.Types (fromJSON)
 
 main :: IO ()
