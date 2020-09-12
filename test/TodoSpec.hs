@@ -2,6 +2,7 @@
 module TodoSpec where
 
 import Todo
+import Repository ( deleteTodoList )
 import Server ( handlers )
 
 import Control.Lens ( (^.), set, (&), (.~) ) 
@@ -76,5 +77,6 @@ spec = beforeAll (setUp) $ do
     invalidTodoItem = InputTodoItem { input_text = " " }
     isInt string = (readMaybe string :: Maybe Int) /= Nothing
     toInt string = fromJust (readMaybe string :: Maybe Int)
-    setUp = do forkIO main
+    setUp = do deleteTodoList
+               forkIO main
                return () 

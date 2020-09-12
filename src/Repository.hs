@@ -10,6 +10,7 @@ import Database.PostgreSQL.Simple (ConnectInfo(connectPassword))
 import Database.PostgreSQL.Simple (defaultConnectInfo)
 import Database.PostgreSQL.Simple (connect)
 import Database.PostgreSQL.Simple.Types (Only(Only))
+import Database.PostgreSQL.Simple (execute_)
 
 write :: ValidTodoItem -> IO Int
 write validTodo = do
@@ -37,6 +38,10 @@ updateTodo todo_id updatedTodo = do
                     let state = newState updatedTodo
                     execute conn "update todo_list set status = ? where id = ?" (state, todo_id)
 
+deleteTodoList :: IO Int64
+deleteTodoList = do
+                    conn <- createConnection
+                    execute_ conn "delete from todo_list"
 
 createConnection :: IO Connection
 createConnection = connect defaultConnectInfo { connectHost = "localhost", connectPassword = "password" }
