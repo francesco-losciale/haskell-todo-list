@@ -8,8 +8,9 @@ import Control.Monad.IO.Class (liftIO)
 import Control.Monad (msum)
 import Control.Monad.Trans.Class (lift)    
 import Database.PostgreSQL.Simple
-    ( FromRow,
+    (Only,  FromRow,
       ToRow,
+      Only,
       query,
       query_,
       connect,
@@ -18,6 +19,8 @@ import Database.PostgreSQL.Simple
       ConnectInfo(connectHost, connectPassword),
       Connection )
 import Database.PostgreSQL.Simple.FromField ( FromField(..) )
+import Database.PostgreSQL.Simple.FromRow
+    ( FromRow(fromRow), field )
 import Database.PostgreSQL.Simple.ToRow      
 import Data.Aeson (encode, decode, toJSON, FromJSON, ToJSON)
 import Data.ByteString.Lazy.UTF8 (toString, ByteString)
@@ -29,6 +32,7 @@ import Happstack.Server (askRq, dir, method, decodeBody, path,
     defaultBodyPolicy, takeRequestBody, toResponse, ok, unBody, resp,
     Method(GET, POST, PATCH), ServerPart, Response)
 import Data.Int (Int64)
+import Database.PostgreSQL.Simple.Types (Only(Only))
 
 -- POST
 data InputTodoItem = InputTodoItem {
@@ -57,6 +61,18 @@ write validTodo = do
                     [xs] <- query conn q validTodo
                     return $ head xs
 
+readList :: IO [TodoItem]
+readList = do
+                    conn <- createConnection
+                    let q = "select id, description, status from todo_list"
+                    query_ conn q :: IO [TodoItem]
+
+readTodo :: Int64 -> IO [TodoItem]
+readTodo todo_id = do
+            conn <- createConnection
+            let q = "select id, description, status from todo_list where id = ? "
+            (query conn q (Only todo_id)) :: IO [TodoItem]
+
 createConnection :: IO Connection
 createConnection = connect defaultConnectInfo { connectHost = "localhost", connectPassword = "password" }
 
@@ -83,8 +99,8 @@ instance FromField State where
       "complete" -> return Complete
       "active" -> return Active
 
-read :: TodoItem
-read = undefined
+instance FromRow TodoItem where
+    fromRow = TodoItem <$> field <*> field <*> field
 
 --PATCH {id}
 data UpdatedTodoItem = UpdatedTodoItem {
@@ -137,10 +153,13 @@ handlers = do
                 dir "todos" $ path $ \(id :: Int64) -> do method PATCH
                                                           body <- getBody
                                                           let state = newState (fromJust $ decode body :: UpdatedTodoItem)
+                                                          -- save state on db
                                                           ok (toResponse $ encode state),                                   
                 dir "todos" $ path $ \(id :: Int64) -> do method GET 
+                                                          lift $ readTodo id
                                                           ok (toResponse $ encode id),
                 dir "todos" $ do method GET 
+                                 -- read all todos from db
                                  ok (toResponse $ encode [TodoItem {todo_id=1, text ="example", state = Active }])
              ]
 
