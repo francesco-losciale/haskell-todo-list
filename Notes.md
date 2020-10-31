@@ -19,6 +19,7 @@
     The context is also the only place where exception handling sits.
 - OO makes code more cohesive. FP makes code more reusable. We tend to create private methods for a single purpose (the object logic) because of the state we need to manage. In FP functions are all public and reusable from anywhere, they are not bound to any other state/variable. (Neal Ford)
 - FP abstractions are smaller. Easier to manage.
+- Composition (of functions) vs inherithance (coupling)
 - Use always records instead of data constructor, it is easier to add or remove fields. 
 - Tdd only after defining the domain model
 - Follow yagni as much as possible when learning to avoid rabbit holes and waste of time
