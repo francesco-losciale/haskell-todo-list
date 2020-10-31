@@ -17,6 +17,7 @@
     In both cases, the function/behaviour lifted is the same. In the first case. It’s the context (functor) we’ve lifted the function over that determines how the function behaves with the data. 
     The datatype and the Functor instance determine the Context. 
     The context is also the only place where exception handling sits.
+- OO makes code more cohesive. FP makes code more reusable. We tend to create private methods for a single purpose (the object logic) because of the state we need to manage. In FP functions are all public and reusable from anywhere, they are not bound to any other state/variable. (Neal Ford)
 - Use always records instead of data constructor, it is easier to add or remove fields. 
 - Tdd only after defining the domain model
 - Follow yagni as much as possible when learning to avoid rabbit holes and waste of time
